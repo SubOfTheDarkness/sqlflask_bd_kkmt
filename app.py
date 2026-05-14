@@ -1,10 +1,16 @@
-from flask import Flask
-
-app = Flask(__name__)
-
+import flask
+from flask import url_for
+app = flask.Flask(__name__)
 @app.route("/")
-def hello_world():
+def main():
+    return flask.redirect(url_for('index'))
+@app.route("/index")
+def index():
     return "<p>Hello, World!</p>"
 @app.route("/admin")
 def admin_panel():
     return "<p>Это админ панель будет короче<p>"
+
+# with app.test_request_context():
+#     print(url_for('index'))
+#     print(url_for('admin_panel'))
