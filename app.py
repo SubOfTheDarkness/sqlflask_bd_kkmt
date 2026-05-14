@@ -6,7 +6,7 @@ def main():
     return flask.redirect(url_for('index'))
 @app.route("/index")
 def index():
-    return "<p>Hello, World!</p>"
+    return flask.render_template('index.html')
 @app.route("/admin")
 def admin_panel():
     return "<p>Это админ панель будет короче<p>"
