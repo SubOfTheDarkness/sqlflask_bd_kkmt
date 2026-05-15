@@ -15,4 +15,5 @@ pip install --upgrade sqlalchemy flask
 
 Учебник со всем про все по Flask-у [here](https://flask.palletsprojects.com/en/stable/)
 
-
+##Инфо про содержимое
+В папке test находится тестовый кусок, чтобы я просто фласку учился. В real - обычный шаблон.
