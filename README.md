@@ -13,7 +13,7 @@ pip install --upgrade sqlalchemy flask
 Я пока только хелловорлд сделал. <br>
 Я точно буду делать БД, нужно фронтенд написать и еще там какую нибудь херь.
 
-Учебник со всем про все по Flask-у [here](https://flask.palletsprojects.com/en/stable/)
+[Учебник со всем про все по Flask-у](https://flask.palletsprojects.com/en/stable/)
 
 ## Инфо про содержимое
 В папке test находится тестовый кусок, чтобы я просто фласку учился. <br> В real - обычный шаблон. <br>
