@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — MyShop{% endblock %}
+
+{% block breadcrumbs %}
+<nav style="max-width:1200px; margin:1.5rem auto 0; padding:0 2rem; font-size:0.9rem; color:#64748b;">
+  <a href="{{ url_for('main.catalog') }}" style="color:#6366f1; text-decoration:none;">Каталог</a> /
+  <a href="{{ url_for('main.catalog') }}" style="color:#6366f1; text-decoration:none;">{{ product.category }}</a> /
+  <span style="color:#64748b;">{{ product.name }}</span>
+</nav>
+{% endblock %}
+
+{% block content %}
+<main class="container" style="margin-top:1rem;">
+  <div class="product-detail">
+    <!-- Галерея -->
+    <div class="gallery">
+      <img src="{{ product.image }}" alt="{{ product.name }}" style="width:100%; border-radius:12px;">
+      
+      {% if product.gallery %}
+      <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+        {% for img in product.gallery %}
+        <img src="{{ img }}" alt="Фото {{ loop.index }}" 
+             style="width:70px; height:70px; object-fit:cover; border-radius:8px; cursor:pointer;
+             {% if loop.first %}border:2px solid #6366f1;{% else %}opacity:0.6;{% endif %}">
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Информация -->
+    <div class="info">
+      <!-- Иконка категории -->
+      {% if product.category == 'Электроника' %}
+        {% set cat_icon = '📱' %}
+      {% elif product.category == 'Одежда' %}
+        {% set cat_icon = '👕' %}
+      {% elif product.category == 'Книги' %}
+        {% set cat_icon = '📚' %}
+      {% elif product.category == 'Аксессуары' %}
+        {% set cat_icon = '🎒' %}
+      {% else %}
+        {% set cat_icon = '📦' %}
+      {% endif %}
+      
+      <span class="category" style="font-size:0.9rem;">{{ cat_icon }} {{ product.category }}</span>
+      
+      <h1>{{ product.name }}</h1>
+      
+      <!-- Рейтинг -->
+      {% set full_stars = product.rating|int %}
+      {% set has_half = (product.rating - full_stars) >= 0.5 %}
+      
+      <div style="font-size:1.2rem; margin:0.5rem 0;">
+        {% for i in range(full_stars) %}
+          <span style="color:#f59e0b;">★</span>
+        {% endfor %}
+        {% if has_half %}
+          <span style="color:#f59e0b;">★</span>
+        {% endif %}
+        {% for i in range(5 - full_stars - (1 if has_half else 0)) %}
+          <span style="color:#d1d5db;">☆</span>
+        {% endfor %}
+        <span style="color:#64748b; font-size:0.9rem;">({{ product.reviews }} отзывов)</span>
+      </div>
+
+      <!-- Цена -->
+      <div style="font-size:2rem; font-weight:700; color:#6366f1; margin:1rem 0;">
+        {{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽
+      </div>
+      
+      {% if product.old_price %}
+      <span style="font-size:1.1rem; color:#64748b; text-decoration:line-through; margin-right:1rem;">
+        {{ "{:,.0f}".format(product.old_price).replace(",", " ") }} ₽
+      </span>
+      {% endif %}
+      
+      {% if product.discount %}
+      <span style="display:inline-block; background:#22c55e; color:white; padding:0.3rem 0.8rem; border-radius:100px; font-size:0.85rem; font-weight:600;">
+        −{{ product.discount }}%
+      </span>
+      {% endif %}
+
+      <!-- Описание -->
+      <p style="margin:1.5rem 0; line-height:1.7;">
+        {{ product.description }}
+      </p>
+
+      <!-- Характеристики -->
+      {% if product.features %}
+      <div style="background:#f8fafc; border-radius:12px; padding:1rem; margin-bottom:1.5rem;">
+        <h4 style="margin-bottom:0.5rem;">📋 Характеристики</h4>
+        <ul style="list-style:none; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+          {% for feature in product.features %}
+          <li>✅ {{ feature }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Наличие -->
+      {% if product.stock > 0 %}
+        {% set stock_bg = '#ecfdf5' %}
+        {% set stock_color = '#065f46' %}
+        {% set stock_text = '✅ В наличии: ' + product.stock|string + ' шт.' %}
+      {% else %}
+        {% set stock_bg = '#fef2f2' %}
+        {% set stock_color = '#991b1b' %}
+        {% set stock_text = '❌ Нет в наличии' %}
+      {% endif %}
+      
+      <div style="margin-bottom:1rem; padding:0.75rem; border-radius:12px; background:{{ stock_bg }}; color:{{ stock_color }};">
+        {{ stock_text }}
+      </div>
+
+      <!-- Количество -->
+      {% if product.stock > 0 %}
+      <div class="quantity-selector">
+        <span>Количество:</span>
+        <button>−</button>
+        <span>1</span>
+        <button>+</button>
+      </div>
+      {% endif %}
+
+      <!-- Кнопки -->
+      <button class="btn btn-primary" 
+              style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;
+                     {% if product.stock == 0 %}opacity:0.5; cursor:not-allowed;{% endif %}"
+              {% if product.stock == 0 %}disabled{% endif %}>
+        {% if product.stock > 0 %}🛒 Добавить в корзину{% else %}⛔ Нет в наличии{% endif %}
+      </button>
+      
+      <button class="btn btn-outline" style="width:100%;">
+        ❤️ В избранное
+      </button>
+    </div>
+  </div>
+</main>
+{% endblock %}
