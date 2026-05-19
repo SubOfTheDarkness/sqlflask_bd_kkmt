@@ -5,4 +5,4 @@ bp = Blueprint('auth', __name__)
 @bp.route('/login')
 def login():
     """Страница входа и регистрации."""
-    return render_template('login.html', cart_count=3)
+    return render_template('auth/login.html')
