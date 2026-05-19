@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог — MyShop{% endblock %}
+
+{% block content %}
+<!-- Hero-секция -->
+<section class="hero">
+  <h1>Коллекция 2026</h1>
+  <p>Открой для себя стильные товары по лучшим ценам</p>
+  <a href="#catalog" class="btn btn-primary" style="background:white; color:#6366f1;">
+    Смотреть новинки →
+  </a>
+</section>
+
+<main class="container" id="catalog">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+    <h2>🔥 Популярные товары</h2>
+    <span style="color:#64748b;">Показано {{ products|length }} товаров</span>
+  </div>
+
+  <!-- Фильтры -->
+  <div class="filters">
+    <input type="text" placeholder="🔍 Поиск товаров...">
+    <select>
+      <option>Все категории</option>
+      <option>📱 Электроника</option>
+      <option>👕 Одежда</option>
+      <option>📚 Книги</option>
+      <option>🏠 Дом</option>
+    </select>
+    <select>
+      <option>Сортировка</option>
+      <option>⬆ По цене (возр.)</option>
+      <option>⬇ По цене (убыв.)</option>
+      <option>⭐ По рейтингу</option>
+    </select>
+  </div>
+
+  <!-- Карточки товаров -->
+  <div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+      {% if product.discount %}
+        <span class="badge">−{{ product.discount }}%</span>
+      {% endif %}
+      
+      <div class="image-wrapper">
+        <img src="{{ product.image }}" alt="{{ product.name }}">
+      </div>
+      
+      <div class="card-body">
+        <span class="category">{{ product.category }}</span>
+        <h3>{{ product.name }}</h3>
+        
+        <div class="rating">
+          {% for i in range(product.rating|int) %}★{% endfor %}
+          {% if product.rating % 1 != 0 %}☆{% endif %}
+          {% for i in range(5 - product.rating|int) %}☆{% endfor %}
+          ({{ product.reviews }})
+        </div>
+        
+        <span class="price">{{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽</span>
+        {% if product.old_price %}
+          <span class="old-price">{{ "{:,.0f}".format(product.old_price).replace(",", " ") }} ₽</span>
+        {% endif %}
+        
+        <button class="btn btn-primary">🛒 В корзину</button>
+        <a href="{{ url_for('main.product', product_id=product.id) }}" 
+           style="display:block; text-align:center; margin-top:0.5rem; font-size:0.9rem; color:#6366f1;">
+          Подробнее →
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</main>
+{% endblock %}

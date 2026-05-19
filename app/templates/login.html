@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Вход — MyShop{% endblock %}
+
+{# Убираем футер для страницы входа #}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="auth-form">
+  <!-- Табы -->
+  <div style="display:flex; gap:1rem; margin-bottom:2rem; border-bottom:2px solid #e2e8f0;">
+    <button id="tab-login" 
+            style="flex:1; padding:0.75rem; border:none; background:none; font-weight:700; font-size:1.1rem; color:#6366f1; border-bottom:3px solid #6366f1; cursor:pointer; font-family:inherit;"
+            onclick="switchTab('login')">
+      🔑 Вход
+    </button>
+    <button id="tab-register" 
+            style="flex:1; padding:0.75rem; border:none; background:none; font-weight:500; font-size:1.1rem; color:#64748b; cursor:pointer; font-family:inherit;"
+            onclick="switchTab('register')">
+      ✨ Регистрация
+    </button>
+  </div>
+
+  <!-- Форма входа -->
+  <form id="form-login">
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" placeholder="example@mail.ru">
+    </div>
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" placeholder="••••••">
+      <a href="#" style="display:block; text-align:right; font-size:0.85rem; color:#6366f1; margin-top:0.25rem;">Забыли пароль?</a>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">
+      Войти
+    </button>
+  </form>
+
+  <!-- Форма регистрации (скрыта) -->
+  <form id="form-register" style="display:none;">
+    <div class="form-group">
+      <label>Имя</label>
+      <input type="text" placeholder="Иван">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" placeholder="example@mail.ru">
+    </div>
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" placeholder="Минимум 6 символов">
+    </div>
+    <div class="form-group">
+      <label>Подтвердите пароль</label>
+      <input type="password" placeholder="Повторите пароль">
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%;">
+      Зарегистрироваться
+    </button>
+  </form>
+
+  <!-- Разделитель -->
+  <div style="display:flex; align-items:center; gap:1rem; margin:1.5rem 0; color:#64748b;">
+    <hr style="flex:1; border-color:#e2e8f0;">
+    <span>или</span>
+    <hr style="flex:1; border-color:#e2e8f0;">
+  </div>
+
+  <!-- Социальные кнопки -->
+  <button class="btn btn-outline" style="width:100%; margin-bottom:0.5rem;">
+    🌐 Войти через Google
+  </button>
+  <button class="btn btn-outline" style="width:100%;">
+    📱 Войти через Telegram
+  </button>
+
+  <p id="switch-text" style="text-align:center; margin-top:1.5rem; color:#64748b;">
+    Нет аккаунта? <a href="#" onclick="switchTab('register')" style="color:#6366f1; font-weight:600;">Зарегистрироваться</a>
+  </p>
+</div>
+
+<!-- JavaScript для переключения табов -->
+<script>
+  function switchTab(tab) {
+    const loginForm = document.getElementById('form-login');
+    const registerForm = document.getElementById('form-register');
+    const loginTab = document.getElementById('tab-login');
+    const registerTab = document.getElementById('tab-register');
+    const switchText = document.getElementById('switch-text');
+    
+    if (tab === 'login') {
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
+      loginTab.style.color = '#6366f1';
+      loginTab.style.borderBottom = '3px solid #6366f1';
+      loginTab.style.fontWeight = '700';
+      registerTab.style.color = '#64748b';
+      registerTab.style.borderBottom = 'none';
+      registerTab.style.fontWeight = '500';
+      switchText.innerHTML = 'Нет аккаунта? <a href="#" onclick="switchTab(\'register\')" style="color:#6366f1; font-weight:600;">Зарегистрироваться</a>';
+    } else {
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'block';
+      registerTab.style.color = '#6366f1';
+      registerTab.style.borderBottom = '3px solid #6366f1';
+      registerTab.style.fontWeight = '700';
+      loginTab.style.color = '#64748b';
+      loginTab.style.borderBottom = 'none';
+      loginTab.style.fontWeight = '500';
+      switchText.innerHTML = 'Уже есть аккаунт? <a href="#" onclick="switchTab(\'login\')" style="color:#6366f1; font-weight:600;">Войти</a>';
+    }
+  }
+</script>
+{% endblock %}
