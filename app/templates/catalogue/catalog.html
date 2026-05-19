@@ -76,18 +76,43 @@
         {% endfor %}
 
         {% if in_cart.yes %}
-          <button class="btn btn-outline" disabled style="width:100%; cursor:default;">
+          <button id="alr_in_cart_button" class="btn btn-outline" disabled style="width:100%; cursor:default;">
             ✅ В корзине
           </button>
         {% else %}
-          <form action="{{ url_for('catalogue.catalogue') }}" method="post">
-            <input type="hidden" name="product_id" value="{{ product.id }}">
-            <button class="btn btn-primary" type="submit" style="width:100%;">
-              🛒 В корзину
-            </button>
-          </form>
+          <button id="to_cart_button" value="{{ product.id }}" class="btn btn-primary" style="width:100%;">
+            🛒 В корзину
+          </button>
         {% endif %}
-        
+        <script>
+        document.getElementById('to_cart_button').addEventListener('click', function() {
+            const button = this;
+            const record = button.getAttribute('value');
+            fetch('/to_cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  value: 1,
+                  product_id: record
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                  button.disabled = true;
+                  button.textContent = '✅ В корзине';
+                  button.classList.toggle("btn btn-primary");
+                  button.classList.toggle("btn btn-outline");
+                  button.setAttribute('cursor', 'default');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+            });
+        });
+        </script>
         <a href="{{ url_for('catalogue.product', product_id=product.id) }}" 
            style="display:block; text-align:center; margin-top:0.5rem; font-size:0.9rem; color:#6366f1;">
           Подробнее →

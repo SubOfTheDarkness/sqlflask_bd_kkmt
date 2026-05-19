@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, url_for, request
+from flask import Blueprint, redirect, render_template, url_for, request, jsonify
 from app.db import get_db
 
 bp = Blueprint('catalogue', __name__)
@@ -8,16 +8,24 @@ bp = Blueprint('catalogue', __name__)
 def index_redirect():
     return redirect(url_for('catalogue.catalogue'))
 
-
-@bp.route('/catalogue',  methods=('GET', 'POST'))
-def catalogue():
-    if request.method == "POST":
-        msg=request.form.get("product_id")
+@bp.route('/to_cart', methods=['POST'])
+def to_cart():
+    data = request.get_json()
+    val = data.get('value')
+    product_ids = data.get('product_id')
+    try:
         db = get_db()
         db.execute(
             'INSERT INTO cart(product_id,user_id,quantity)'
-            ' VALUES(?,0,1)', (msg,))
+            ' VALUES(?,0,?)', (product_ids,val))
         db.commit()
+        return jsonify({'status': 'success'})
+
+    except Exception as e:
+        return jsonify({'status': 'error'})
+
+@bp.route('/catalogue')
+def catalogue():
     db = get_db()
     products = db.execute(
         'SELECT id, title, price, discount, category, image'
