@@ -68,17 +68,24 @@
           {% set old_price = (product.price / (1 - product.discount/100))|round|int %}
           <span class="old-price">{{ "{:,.0f}".format(old_price).replace(",", " ") }} ₽</span>
         {% endif %}
-        {% set flag_in = namespace(yes=False) %}
-        {% for productss in carts %} 
-          {% if product.id == productss.product_id %} {% set flag_in.yes=True %}
+        {% set in_cart = false %}
+        {% for cart_item in carts %}
+          {% if product.id == cart_item.product_id %}
+            {% set in_cart = true %}
           {% endif %}
-        {% endfor %}  
-        {% if flag_in.yes==0 %}
-          <form action="/catalogue" method="post">
+        {% endfor %}
+
+        {% if in_cart %}
+          <button class="btn btn-outline" disabled style="width:100%; cursor:default;">
+            ✅ В корзине
+          </button>
+        {% else %}
+          <form action="{{ url_for('catalogue.catalogue') }}" method="post">
             <input type="hidden" name="product_id" value="{{ product.id }}">
-            <button class="btn btn-primary" type="submit" />🛒 В корзину</></button>
+            <button class="btn btn-primary" type="submit" style="width:100%;">
+              🛒 В корзину
+            </button>
           </form>
-        {% else %} <h1> Уже в корзине <h1> 
         {% endif %}
         
         <a href="{{ url_for('catalogue.product', product_id=product.id) }}" 

@@ -62,28 +62,49 @@
         {{ product.description }}
       </p>
       {% endif %}
-      {% set count = 1%}
+      {% set in_cart = false %}
+      {% for cart_item in carts %}
+        {% if product.id == cart_item.product_id %}
+          {% set in_cart = true %}
+        {% endif %}
+      {% endfor %}
+
       <!-- Количество -->
       <div class="quantity-selector">
         <span>Количество:</span>
-        <button>−</button>
-        <span>1</span>
-        <button>+</button>
+        <button type="button" onclick="changeQty(-1)">−</button>
+        <span id="qty-display">1</span>
+        <button type="button" onclick="changeQty(1)">+</button>
       </div>
 
       <!-- Кнопки -->
-      {% set flag_in = namespace(yes=False) %}
-      {% for productss in carts %} 
-        {% if product.id == productss.product_id %} {% set flag_in.yes=True %}
-        {% endif %}
-      {% endfor %}  
-      {% if flag_in.yes==0 %}
-        <form action="/product/{{product.id}}" method="post">
-          <input type="hidden" name="product_id" value="{{ count }}">
-          <button class="btn btn-primary" type="submit" style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;" />Добавить в корзину</></button>
+      {% if in_cart %}
+        <button class="btn btn-outline" disabled style="width:100%; font-size:1.1rem; margin-bottom:0.5rem; cursor:default;">
+          ✅ Уже в корзине
+        </button>
+      {% else %}
+        <form action="{{ url_for('catalogue.product', product_id=product.id) }}" method="post" id="add-to-cart-form">
+          <input type="hidden" name="product_id" id="qty-input" value="1">
+          <button class="btn btn-primary" type="submit" style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;">
+            🛒 Добавить в корзину
+          </button>
         </form>
-      {% else %} <h1> Уже в корзине <h1> 
       {% endif %}
+
+      <button class="btn btn-outline" style="width:100%;">
+        ❤️ В избранное
+      </button>
+
+      <script>
+        function changeQty(delta) {
+          const display = document.getElementById('qty-display');
+          const input = document.getElementById('qty-input');
+          let current = parseInt(display.textContent);
+          current = Math.max(1, current + delta);
+          display.textContent = current;
+          input.value = current;
+        }
+      </script>
     </div>
   </div>
 </main>
