@@ -38,15 +38,8 @@ def catalogue():
 
 
 @bp.route('/product')
-@bp.route('/product/<int:product_id>', methods=('GET', 'POST'))
+@bp.route('/product/<int:product_id>')
 def product(product_id=1):
-    if request.method == "POST":
-        quantitys=request.form.get("quantitys")
-        db = get_db()
-        db.execute(
-            'INSERT INTO cart(product_id,user_id,quantity)'
-            ' VALUES(?,0,?)', (product_id,quantitys,))
-        db.commit()
     db = get_db()
     product = db.execute(
         'SELECT id, title, description, price, discount, category, image'
