@@ -12,7 +12,8 @@ def catalogue():
     """Главная страница с каталогом товаров."""
     db=get_db()
     products = db.execute(
-        'SELECT p.id, title, price, discount, category, image FROM product p'
+        'SELECT p.id, title, price, discount, category, image'
+        ' FROM product p'
     ).fetchall()
     #     {
     #         'id': 1,
@@ -69,7 +70,8 @@ def product(product_id=1):
     """Страница отдельного товара."""
     db=get_db()
     product_data = db.execute(
-        'SELECT p.id, title, description, price, discount, category, image FROM product p WHERE p,id = ?', (product_id,)
+        'SELECT p.id, title, description, price, discount, category, image'
+        ' FROM product p WHERE p,id = ?', (product_id,)
     ).fetchone()
     # {
     #     'id': product_id,

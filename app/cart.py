@@ -7,8 +7,9 @@ def cart():
     """Страница корзины."""
     db=get_db()
     cart_items = db.execute(
-        'SELECT p.title, c.quantity, p.price, p.discount, p.category, p.image FROM cart c'
-        'LEFT JOIN product p ON p.id = c.product_id'
+        'SELECT title, quantity, price, discount, category, image'
+        ' FROM cart c'
+        ' LEFT JOIN product p ON p.id = c.product_id'
     ).fetchall()
     #     {
     #         'id': 1,

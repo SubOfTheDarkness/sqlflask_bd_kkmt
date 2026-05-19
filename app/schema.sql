@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS cart;
+DROP TABLE IF EXISTS product;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,5 +24,8 @@ CREATE TABLE product(
     price INTEGER NOT NULL,
     discount integer,
     category TEXT NOT NULL,
-    image TEXT NOT NULL
-)
+    image TEXT
+);
+
+insert into product(title, description, price, discount,category)
+values ('Мандарины','Мандарны свежие 1 кг',60,0,'Фрукты')
