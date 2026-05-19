@@ -62,27 +62,27 @@
         {{ product.description }}
       </p>
       {% endif %}
-      {% set in_cart = false %}
+      {% set in_cart = namespace(yes=false) %}
       {% for cart_item in carts %}
         {% if product.id == cart_item.product_id %}
-          {% set in_cart = true %}
+          {% set in_cart.yes = true %}
         {% endif %}
       {% endfor %}
 
-      <!-- Количество -->
-      <div class="quantity-selector">
-        <span>Количество:</span>
-        <button type="button" onclick="changeQty(-1)">−</button>
-        <span id="qty-display">1</span>
-        <button type="button" onclick="changeQty(1)">+</button>
-      </div>
 
       <!-- Кнопки -->
-      {% if in_cart %}
+      {% if in_cart.yes %}
         <button class="btn btn-outline" disabled style="width:100%; font-size:1.1rem; margin-bottom:0.5rem; cursor:default;">
           ✅ Уже в корзине
         </button>
       {% else %}
+        <!-- Количество -->
+        <div class="quantity-selector">
+          <span>Количество:</span>
+          <button type="button" onclick="changeQty(-1)">−</button>
+          <span id="qty-display">1</span>
+          <button type="button" onclick="changeQty(1)">+</button>
+        </div>
         <form action="{{ url_for('catalogue.product', product_id=product.id) }}" method="post" id="add-to-cart-form">
           <input type="hidden" name="product_id" id="qty-input" value="1">
           <button class="btn btn-primary" type="submit" style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;">
@@ -90,10 +90,6 @@
           </button>
         </form>
       {% endif %}
-
-      <button class="btn btn-outline" style="width:100%;">
-        ❤️ В избранное
-      </button>
 
       <script>
         function changeQty(delta) {

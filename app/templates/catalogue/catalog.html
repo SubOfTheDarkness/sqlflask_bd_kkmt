@@ -68,14 +68,14 @@
           {% set old_price = (product.price / (1 - product.discount/100))|round|int %}
           <span class="old-price">{{ "{:,.0f}".format(old_price).replace(",", " ") }} ₽</span>
         {% endif %}
-        {% set in_cart = false %}
+        {% set in_cart = namespace(yes=false) %}
         {% for cart_item in carts %}
           {% if product.id == cart_item.product_id %}
-            {% set in_cart = true %}
+            {% set in_cart.yes = true %}
           {% endif %}
         {% endfor %}
 
-        {% if in_cart %}
+        {% if in_cart.yes %}
           <button class="btn btn-outline" disabled style="width:100%; cursor:default;">
             ✅ В корзине
           </button>
