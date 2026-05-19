@@ -62,7 +62,7 @@
         {{ product.description }}
       </p>
       {% endif %}
-
+      {% set count = 1%}
       <!-- Количество -->
       <div class="quantity-selector">
         <span>Количество:</span>
@@ -72,13 +72,18 @@
       </div>
 
       <!-- Кнопки -->
-      <button class="btn btn-primary" style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;">
-        🛒 Добавить в корзину
-      </button>
-      
-      <button class="btn btn-outline" style="width:100%;">
-        ❤️ В избранное
-      </button>
+      {% set flag_in = namespace(yes=False) %}
+      {% for productss in carts %} 
+        {% if product.id == productss.product_id %} {% set flag_in.yes=True %}
+        {% endif %}
+      {% endfor %}  
+      {% if flag_in.yes==0 %}
+        <form action="/product/{{product.id}}" method="post">
+          <input type="hidden" name="product_id" value="{{ count }}">
+          <button class="btn btn-primary" type="submit" style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;" />Добавить в корзину</></button>
+        </form>
+      {% else %} <h1> Уже в корзине <h1> 
+      {% endif %}
     </div>
   </div>
 </main>
