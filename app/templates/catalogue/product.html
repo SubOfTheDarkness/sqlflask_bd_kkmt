@@ -84,7 +84,7 @@
           <button type="button" onclick="changeQty(1)">+</button>
         </div>
         <form action="{{ url_for('catalogue.product', product_id=product.id) }}" method="post" id="add-to-cart-form">
-          <input type="hidden" name="product_id" id="qty-input" value="1">
+          <input type="hidden" name="quantitys" id="qty-input" value="1">
           <button class="btn btn-primary" type="submit" style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;">
             🛒 Добавить в корзину
           </button>
