@@ -4,8 +4,8 @@
 
 {% block breadcrumbs %}
 <nav style="max-width:1200px; margin:1.5rem auto 0; padding:0 2rem; font-size:0.9rem; color:#64748b;">
-  <a href="{{ url_for('main.catalog') }}" style="color:#6366f1; text-decoration:none;">Каталог</a> /
-  <a href="{{ url_for('main.catalog') }}" style="color:#6366f1; text-decoration:none;">{{ product.category }}</a> /
+  <a href="{{ url_for('catalogue.catalogue') }}" style="color:#6366f1; text-decoration:none;">Каталог</a> /
+  <a href="{{ url_for('catalogue.catalogue') }}" style="color:#6366f1; text-decoration:none;">{{ product.category }}</a> /
   <span style="color:#64748b;">{{ product.name }}</span>
 </nav>
 {% endblock %}

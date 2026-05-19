@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template
 
-cart_bp = Blueprint('cart', __name__)
+bp = Blueprint('cart', __name__)
 # ========== КОРЗИНА ==========
-@cart_bp.route('/cart')
+@bp.route('/cart')
 def cart():
     """Страница корзины."""
     cart_items = [
@@ -39,7 +39,7 @@ def cart():
 
 
 # ========== ОФОРМЛЕНИЕ ЗАКАЗА ==========
-@cart_bp.route('/checkout')
+@bp.route('/checkout')
 def checkout():
     """Страница оформления заказа."""
     cart_summary = [

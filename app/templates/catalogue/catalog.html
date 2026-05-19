@@ -7,12 +7,12 @@
 <section class="hero">
   <h1>Коллекция 2026</h1>
   <p>Открой для себя стильные товары по лучшим ценам</p>
-  <a href="#catalog" class="btn btn-primary" style="background:white; color:#6366f1;">
+  <a href="#catalogue" class="btn btn-primary" style="background:white; color:#6366f1;">
     Смотреть новинки →
   </a>
 </section>
 
-<main class="container" id="catalog">
+<main class="container" id="catalogue">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
     <h2>🔥 Популярные товары</h2>
     <span style="color:#64748b;">Показано {{ products|length }} товаров</span>
@@ -65,7 +65,7 @@
         {% endif %}
         
         <button class="btn btn-primary">🛒 В корзину</button>
-        <a href="{{ url_for('main.product', product_id=product.id) }}" 
+        <a href="{{ url_for('catalogue.product', product_id=product.id) }}" 
            style="display:block; text-align:center; margin-top:0.5rem; font-size:0.9rem; color:#6366f1;">
           Подробнее →
         </a>

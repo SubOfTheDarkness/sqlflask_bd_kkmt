@@ -10,10 +10,10 @@
 <body>
   <!-- Шапка -->
   <header>
-    <div class="logo"><a href="{{ url_for('main.catalog') }}">✨ MyShop</a></div>
+    <div class="logo"><a href="{{ url_for('catalogue.catalogue') }}">✨ MyShop</a></div>
     <nav>
-      <a href="{{ url_for('main.catalog') }}">Каталог</a>
-      <a href="{{ url_for('main.cart') }}" class="cart-icon">
+      <a href="{{ url_for('catalogue.catalogue') }}">Каталог</a>
+      <a href="{{ url_for('cart.cart') }}" class="cart-icon">
         🛒 Корзина
         {% if cart_count and cart_count > 0 %}
           <span class="cart-count">{{ cart_count }}</span>
@@ -23,7 +23,7 @@
         <a href="#">{{ current_user.name }}</a>
         <a href="#">Выйти</a>
       {% else %}
-        <a href="{{ url_for('main.login') }}">Войти</a>
+        <a href="{{ url_for('auth.login') }}">Войти</a>
       {% endif %}
     </nav>
   </header>

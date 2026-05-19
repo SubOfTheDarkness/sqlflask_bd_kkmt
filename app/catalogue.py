@@ -1,12 +1,11 @@
 from flask import Blueprint, render_template
 
-catalogue_bp = Blueprint('catalogue', __name__)
+bp = Blueprint('catalogue', __name__)
 
 
 # ========== ГЛАВНАЯ — КАТАЛОГ ==========
-@catalogue_bp.route('/')
-@catalogue_bp.route('/catalog')
-def catalog():
+@bp.route('/')
+def catalogue():
     """Главная страница с каталогом товаров."""
     # Пока статические данные, позже — из базы
     products = [
@@ -57,12 +56,12 @@ def catalog():
     ]
     
     cart_count = 3  # заглушка
-    return render_template('catalog.html', products=products, cart_count=cart_count)
+    return render_template('catalogue/catalog.html', products=products, cart_count=cart_count)
 
 
 # ========== КАРТОЧКА ТОВАРА ==========
-@catalogue_bp.route('/product')
-@catalogue_bp.route('/product/<int:product_id>')
+@bp.route('/product')
+@bp.route('/product/<int:product_id>')
 def product(product_id=1):
     """Страница отдельного товара."""
     product_data = {
@@ -84,7 +83,7 @@ def product(product_id=1):
     }
     
     cart_count = 3
-    return render_template('product.html', product=product_data, cart_count=cart_count)
+    return render_template('catalogue/product.html', product=product_data, cart_count=cart_count)
 
 
 

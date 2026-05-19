@@ -31,7 +31,7 @@
               <img src="{{ item.image }}" alt="{{ item.name }}" class="cart-item-image">
               <div>
                 <strong>
-                  <a href="{{ url_for('main.product', product_id=item.id) }}" 
+                  <a href="{{ url_for('catalogue.product', product_id=item.id) }}" 
                      style="color:inherit; text-decoration:none;">
                     {{ item.name }}
                   </a>
@@ -74,10 +74,10 @@
         <span style="font-size:1.2rem; font-weight:600;">Итого</span>
         <span class="total">{{ "{:,.0f}".format(total).replace(",", " ") }} ₽</span>
       </div>
-      <a href="{{ url_for('main.checkout') }}" class="btn btn-primary" style="width:100%; font-size:1.1rem;">
+      <a href="{{ url_for('cart.checkout') }}" class="btn btn-primary" style="width:100%; font-size:1.1rem;">
         🚀 Оформить заказ
       </a>
-      <a href="{{ url_for('main.catalog') }}" style="display:block; text-align:center; margin-top:1rem; color:#6366f1;">
+      <a href="{{ url_for('catalogue.catalogue') }}" style="display:block; text-align:center; margin-top:1rem; color:#6366f1;">
         ← Продолжить покупки
       </a>
     </div>
@@ -88,7 +88,7 @@
       <div class="icon">🛒</div>
       <h2>Ваша корзина пуста</h2>
       <p>Добавьте товары из каталога, чтобы сделать заказ</p>
-      <a href="{{ url_for('main.catalog') }}" class="btn btn-primary">
+      <a href="{{ url_for('catalogue.catalogue') }}" class="btn btn-primary">
         Перейти в каталог
       </a>
     </div>
