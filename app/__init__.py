@@ -1,15 +1,10 @@
-from flask import Flask
+import flask
 import os
 
 
 def create_app():
-    """
-    Фабрика приложения Flask.
-    Позволяет гибко настраивать приложение (тесты, разные конфигурации).
-    """
-    app = Flask(__name__)
+    app = flask.Flask(__name__)
     
-    # ========== КОНФИГУРАЦИЯ ==========
     app.config['SECRET_KEY'] = 'dev-secret-key-change-in-production-123!@#'
     app.config['DEBUG'] = True
     
@@ -18,17 +13,21 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'shop.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    # ========== РЕГИСТРАЦИЯ МАРШРУТОВ ==========
-    from app.routes import main_bp
-    app.register_blueprint(main_bp)
+    from app.catalogue import catalogue_bp
+    app.register_blueprint(catalogue_bp)
+
+    from app.cart import cart_bp
+    app.register_blueprint(cart_bp)
     
-    # ========== ОБРАБОТЧИКИ ОШИБОК ==========
+    from app.auth import auth_bp
+    app.register_blueprint(auth_bp)
+
     @app.errorhandler(404)
     def not_found(error):
-        return '<h1 style="text-align:center; margin-top:4rem;">🔍 Страница не найдена</h1><p style="text-align:center;"><a href="/">Вернуться в каталог</a></p>', 404
+        return '<h1>Ошибка 404</h1><p><a href="/">Вернуться на глваную страницу</a></p>', 404
     
     @app.errorhandler(500)
     def server_error(error):
-        return '<h1 style="text-align:center; margin-top:4rem;">💥 Ошибка сервера</h1><p style="text-align:center;"><a href="/">Вернуться в каталог</a></p>', 500
+        return '<h1>Ошибка 500(ошибка сервера)</h1><p><a href="/">Вернуться на глваную страницу</a></p>', 404
     
     return app
