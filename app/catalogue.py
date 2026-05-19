@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, render_template, url_for
 
 bp = Blueprint('catalogue', __name__)
 
 
 # ========== ГЛАВНАЯ — КАТАЛОГ ==========
 @bp.route('/')
+def index_redirect():
+    return redirect(url_for('catalogue.catalogue'))
+@bp.route('/catalogue')
 def catalogue():
     """Главная страница с каталогом товаров."""
     # Пока статические данные, позже — из базы
