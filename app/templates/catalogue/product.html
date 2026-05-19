@@ -103,7 +103,7 @@
             const button = this;
             const record = button.getAttribute('value');
             const product_id = button.getAttribute('product_id')
-            fetch('/to_cart', {
+            fetch(' {{ url_for('catalogue.to_cart') }} ', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
