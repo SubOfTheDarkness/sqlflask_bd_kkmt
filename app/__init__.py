@@ -16,8 +16,8 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, World!'
 
-    # from . import bp
-    # db.init_app(app)
+    from . import db
+    db.init_app(app)
 
     from . import cart
     app.register_blueprint(cart.bp)
