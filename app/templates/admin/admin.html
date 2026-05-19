@@ -1,119 +1,104 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Админ-панель — MyShop</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .admin-sidebar {
-      width: 250px;
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: var(--shadow);
-      height: fit-content;
-      position: sticky;
-      top: 6rem;
-    }
-    .admin-sidebar a {
-      display: block;
-      padding: 0.75rem 1rem;
-      margin-bottom: 0.25rem;
-      text-decoration: none;
-      color: var(--text);
-      border-radius: var(--radius);
-      transition: var(--transition);
-      font-weight: 500;
-    }
-    .admin-sidebar a:hover,
-    .admin-sidebar a.active {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="logo"><a href="catalog.html">✨ MyShop</a></div>
-    <nav>
-      <span style="color:var(--text-light);">👑 Админ</span>
-      <a href="catalog.html">На сайт</a>
-      <a href="login.html">Выйти</a>
-    </nav>
-  </header>
+{% extends "base.html" %}
 
-  <main class="container" style="display:grid; grid-template-columns:250px 1fr; gap:2rem; margin-top:2rem;">
-    <!-- Боковое меню -->
-    <aside class="admin-sidebar">
-      <h3 style="margin-bottom:1rem;">⚙️ Управление</h3>
-      <a href="#" class="active">📊 Дашборд</a>
-      <a href="#">📦 Товары</a>
-      <a href="#">📋 Категории</a>
-      <a href="#">🛒 Заказы</a>
-      <a href="#">👥 Пользователи</a>
-      <a href="#">📈 Статистика</a>
-    </aside>
+{% block title %}Админ-панель — MyShop{% endblock %}
 
-    <!-- Контент -->
-    <section>
-      <h1 style="margin-bottom:1.5rem;">📊 Дашборд</h1>
-      
-      <!-- Статистика -->
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1rem; margin-bottom:2rem;">
-        <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-          <span style="color:var(--text-light); font-size:0.9rem;">Заказов сегодня</span>
-          <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">24</div>
-        </div>
-        <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-          <span style="color:var(--text-light); font-size:0.9rem;">Выручка</span>
-          <div style="font-size:2rem; font-weight:700; margin-top:0.5rem; color:#22c55e;">87 490 ₽</div>
-        </div>
-        <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-          <span style="color:var(--text-light); font-size:0.9rem;">Товаров</span>
-          <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">156</div>
-        </div>
-        <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-          <span style="color:var(--text-light); font-size:0.9rem;">Пользователей</span>
-          <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">1 234</div>
-        </div>
+{% block extra_head %}
+<style>
+  .admin-sidebar {
+    width: 250px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    height: fit-content;
+    position: sticky;
+    top: 6rem;
+  }
+  .admin-sidebar a {
+    display: block;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+    text-decoration: none;
+    color: var(--text);
+    border-radius: var(--radius);
+    transition: var(--transition);
+    font-weight: 500;
+  }
+  .admin-sidebar a:hover,
+  .admin-sidebar a.active {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="container" style="display:grid; grid-template-columns:250px 1fr; gap:2rem; margin-top:2rem;">
+  <aside class="admin-sidebar">
+    <h3 style="margin-bottom:1rem;">⚙️ Управление</h3>
+    <a href="#" class="active">📊 Дашборд</a>
+    <a href="#">📦 Товары</a>
+    <a href="#">📋 Категории</a>
+    <a href="#">🛒 Заказы</a>
+    <a href="#">👥 Пользователи</a>
+    <a href="#">📈 Статистика</a>
+  </aside>
+
+  <section>
+    <h1 style="margin-bottom:1.5rem;">📊 Дашборд</h1>
+    
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1rem; margin-bottom:2rem;">
+      <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+        <span style="color:var(--text-light); font-size:0.9rem;">Заказов сегодня</span>
+        <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">24</div>
       </div>
-
-      <!-- Таблица последних заказов -->
-      <div style="background:var(--card-bg); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm);">
-        <h3 style="margin-bottom:1rem;">🕐 Последние заказы</h3>
-        <table style="width:100%; border-collapse:collapse;">
-          <thead>
-            <tr style="border-bottom:2px solid var(--border); color:var(--text-light);">
-              <th style="padding:0.75rem; text-align:left;">№</th>
-              <th style="padding:0.75rem; text-align:left;">Клиент</th>
-              <th style="padding:0.75rem; text-align:left;">Сумма</th>
-              <th style="padding:0.75rem; text-align:left;">Статус</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom:1px solid var(--border);">
-              <td style="padding:0.75rem;">#1024</td>
-              <td style="padding:0.75rem;">Анна Петрова</td>
-              <td style="padding:0.75rem;">4 998 ₽</td>
-              <td style="padding:0.75rem;"><span style="background:#fef3c7; color:#92400e; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">В обработке</span></td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--border);">
-              <td style="padding:0.75rem;">#1023</td>
-              <td style="padding:0.75rem;">Иван Смирнов</td>
-              <td style="padding:0.75rem;">1 200 ₽</td>
-              <td style="padding:0.75rem;"><span style="background:#d1fae5; color:#065f46; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">Доставлен</span></td>
-            </tr>
-            <tr>
-              <td style="padding:0.75rem;">#1022</td>
-              <td style="padding:0.75rem;">Мария Козлова</td>
-              <td style="padding:0.75rem;">7 097 ₽</td>
-              <td style="padding:0.75rem;"><span style="background:#ede9fe; color:#5b21b6; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">В пути</span></td>
-            </tr>
-          </tbody>
-        </table>
+      <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+        <span style="color:var(--text-light); font-size:0.9rem;">Выручка</span>
+        <div style="font-size:2rem; font-weight:700; margin-top:0.5rem; color:#22c55e;">87 490 ₽</div>
       </div>
-    </section>
-  </main>
-</body>
-</html>
+      <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+        <span style="color:var(--text-light); font-size:0.9rem;">Товаров</span>
+        <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">156</div>
+      </div>
+      <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
+        <span style="color:var(--text-light); font-size:0.9rem;">Пользователей</span>
+        <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">1 234</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card-bg); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm);">
+      <h3 style="margin-bottom:1rem;">🕐 Последние заказы</h3>
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border); color:var(--text-light);">
+            <th style="padding:0.75rem; text-align:left;">№</th>
+            <th style="padding:0.75rem; text-align:left;">Клиент</th>
+            <th style="padding:0.75rem; text-align:left;">Сумма</th>
+            <th style="padding:0.75rem; text-align:left;">Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:0.75rem;">#1024</td>
+            <td style="padding:0.75rem;">Анна Петрова</td>
+            <td style="padding:0.75rem;">4 998 ₽</td>
+            <td style="padding:0.75rem;"><span style="background:#fef3c7; color:#92400e; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">В обработке</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:0.75rem;">#1023</td>
+            <td style="padding:0.75rem;">Иван Смирнов</td>
+            <td style="padding:0.75rem;">1 200 ₽</td>
+            <td style="padding:0.75rem;"><span style="background:#d1fae5; color:#065f46; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">Доставлен</span></td>
+          </tr>
+          <tr>
+            <td style="padding:0.75rem;">#1022</td>
+            <td style="padding:0.75rem;">Мария Козлова</td>
+            <td style="padding:0.75rem;">7 097 ₽</td>
+            <td style="padding:0.75rem;"><span style="background:#ede9fe; color:#5b21b6; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">В пути</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}

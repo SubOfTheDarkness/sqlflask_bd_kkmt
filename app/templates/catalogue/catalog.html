@@ -26,13 +26,12 @@
       <option>📱 Электроника</option>
       <option>👕 Одежда</option>
       <option>📚 Книги</option>
-      <option>🏠 Дом</option>
+      <option>🍎 Фрукты</option>
     </select>
     <select>
       <option>Сортировка</option>
       <option>⬆ По цене (возр.)</option>
       <option>⬇ По цене (убыв.)</option>
-      <option>⭐ По рейтингу</option>
     </select>
   </div>
 
@@ -40,28 +39,34 @@
   <div class="product-grid">
     {% for product in products %}
     <div class="product-card">
-      {% if product.discount %}
+      {% if product.discount and product.discount > 0 %}
         <span class="badge">−{{ product.discount }}%</span>
       {% endif %}
       
       <div class="image-wrapper">
-        <img src="{{ product.image }}" alt="{{ product.name }}">
+        {% if product.image %}
+          <img src="{{ product.image }}" alt="{{ product.title }}">
+        {% else %}
+          <img src="https://via.placeholder.com/400x300?text=Нет+фото" alt="{{ product.title }}">
+        {% endif %}
       </div>
       
       <div class="card-body">
-        <span class="category">{{ product.category }}</span>
-        <h3>{{ product.name }}</h3>
-        
-        <div class="rating">
-          {% for i in range(product.rating|int) %}★{% endfor %}
-          {% if product.rating % 1 != 0 %}☆{% endif %}
-          {% for i in range(5 - product.rating|int) %}☆{% endfor %}
-          ({{ product.reviews }})
-        </div>
+        <span class="category">
+          {% if product.category == 'Электроника' %}📱
+          {% elif product.category == 'Одежда' %}👕
+          {% elif product.category == 'Книги' %}📚
+          {% elif product.category == 'Фрукты' %}🍎
+          {% else %}📦{% endif %}
+          {{ product.category }}
+        </span>
+        <h3>{{ product.title }}</h3>
         
         <span class="price">{{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽</span>
-        {% if product.old_price %}
-          <span class="old-price">{{ "{:,.0f}".format(product.old_price).replace(",", " ") }} ₽</span>
+        
+        {% if product.discount and product.discount > 0 %}
+          {% set old_price = (product.price / (1 - product.discount/100))|round|int %}
+          <span class="old-price">{{ "{:,.0f}".format(old_price).replace(",", " ") }} ₽</span>
         {% endif %}
         
         <button class="btn btn-primary">🛒 В корзину</button>
