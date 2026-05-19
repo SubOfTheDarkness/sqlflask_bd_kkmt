@@ -35,7 +35,7 @@ def cart():
     total = sum(item['price'] * item['quantity'] for item in cart_items)
     cart_count = len(cart_items)
     
-    return render_template('cart.html', cart_items=cart_items, total=total, cart_count=cart_count)
+    return render_template('cart/cart.html', cart_items=cart_items, total=total, cart_count=cart_count)
 
 
 # ========== ОФОРМЛЕНИЕ ЗАКАЗА ==========
@@ -51,4 +51,4 @@ def checkout():
     total = 7097
     cart_count = 3
     
-    return render_template('checkout.html', cart_summary=cart_summary, total=total, cart_count=cart_count)
+    return render_template('cart/checkout.html', cart_summary=cart_summary, total=total, cart_count=cart_count)
