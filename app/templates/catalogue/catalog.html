@@ -31,17 +31,17 @@
     {% set sort_on = request.args.sort_direction|default(-1)|e|int %}
     
       {% if sort_on == 0%}
-        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;"></select>
+        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
           <option>Сортировка ⬆ По цене (возр.)</option>
           <option value="?sort_on=0">Сортировка ⬇ По цене (убыв.)</option>
         </select>
       {% elif sort_on == 1%}
-        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;"></select>
+        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
           <option value="?sort_on=1">Сортировка ⬆ По цене (возр.)</option>
           <option>Сортировка ⬇ По цене (убыв.)</option>
         </select>
       {% else %}
-        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;"></select>
+        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
           <option>Сортировка</option>
           <option value="?sort_on=1">Сортировка ⬆ По цене (возр.)</option>
           <option value="?sort_on=0">Сортировка ⬇ По цене (убыв.)</option>
