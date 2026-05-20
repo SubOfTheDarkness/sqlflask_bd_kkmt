@@ -88,6 +88,7 @@
       {% endif %}
 
       <script>
+        
         // Счётчик количества
         function changeQty(delta) {
           const display = document.getElementById('qty-display');
@@ -121,13 +122,16 @@
                 btn.classList.add('btn-outline');
                 btn.style.opacity = '0.7';
                 btn.style.cursor = 'default';
-                
+                showToast("Добавлено в корзину", success);
                 // Скрыть счётчик после добавления
                 const selector = document.getElementById('qty-selector');
                 if (selector) selector.style.display = 'none';
               }
             })
-            .catch(function(err) { console.error('Ошибка:', err); });
+            .catch(function(err) {
+              console.error('Ошибка:', err);
+              showToast(error, 'error');
+              });
           });
         }
       </script>
@@ -154,10 +158,12 @@
                   button.classList.toggle("btn btn-primary");
                   button.classList.toggle("btn btn-outline");
                   button.setAttribute('cursor', 'default');
+                  showToast("Добавлено в корзину", success);
                 }
             })
             .catch(error => {
                 console.error('Ошибка:', error);
+                showToast(error, 'error');
             });
         });
         </script>
