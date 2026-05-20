@@ -132,12 +132,12 @@
             btn.classList.add('btn-outline', 'in-cart-btn');
             btn.style.opacity = '0.7';
             btn.style.cursor = 'default';
-            showToast("Добавлено в корзину", success);
+            showToast("Добавлено в корзину", "success");
           }
         })
         .catch(function(err) {
           console.error('Ошибка:', err);
-          showToast(error, 'error');
+          showToast("Ошибка соединения с сервером", "error");
         });
       });
     });

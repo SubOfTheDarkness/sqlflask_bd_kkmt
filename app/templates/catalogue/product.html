@@ -158,12 +158,12 @@
                   button.classList.toggle("btn btn-primary");
                   button.classList.toggle("btn btn-outline");
                   button.setAttribute('cursor', 'default');
-                  showToast("Добавлено в корзину", success);
+                  showToast("Добавлено в корзину", "success");
                 }
             })
             .catch(error => {
                 console.error('Ошибка:', error);
-                showToast(error, 'error');
+                showToast("Ошибка соединения с сервером", "error");
             });
         });
         </script>
