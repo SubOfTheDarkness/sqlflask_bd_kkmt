@@ -68,6 +68,7 @@
           {% set old_price = (product.price / (1 - product.discount/100))|round|int %}
           <span class="old-price">{{ "{:,.0f}".format(old_price).replace(",", " ") }} ₽</span>
         {% endif %}
+        
         {% set in_cart = namespace(yes=false) %}
         {% for cart_item in carts %}
           {% if product.id == cart_item.product_id %}
@@ -76,50 +77,49 @@
         {% endfor %}
 
         {% if in_cart.yes %}
-          <button id="alr_in_cart_button" class="btn btn-outline" disabled style="width:100%; cursor:default;">
+          <button class="btn btn-outline in-cart-btn" disabled style="width:100%; cursor:default; opacity:0.7;">
             ✅ В корзине
           </button>
         {% else %}
-          <button id="to_cart_button" value="{{ product.id }}" class="btn btn-primary" style="width:100%;">
+          <button class="btn btn-primary add-to-cart-btn" data-product-id="{{ product.id }}" style="width:100%;">
             🛒 В корзину
           </button>
         {% endif %}
-        <script>
-        document.getElementById('to_cart_button').addEventListener('click', function() {
-            const button = this;
-            const record = button.getAttribute('value');
-            fetch(' {{ url_for('catalogue.to_cart') }} ', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  value: 1,
-                  product_id: record
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                  button.disabled = true;
-                  button.textContent = '✅ В корзине';
-                  button.classList.toggle("btn btn-primary");
-                  button.classList.toggle("btn btn-outline");
-                  button.setAttribute('cursor', 'default');
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-            });
-        });
-        </script>
+        
         <a href="{{ url_for('catalogue.product', product_id=product.id) }}" 
-           style="display:block; text-align:center; margin-top:0.5rem; font-size:0.9rem; color:#6366f1;">
+          style="display:block; text-align:center; margin-top:0.5rem; font-size:0.9rem; color:#6366f1;">
           Подробнее →
         </a>
       </div>
     </div>
     {% endfor %}
+
+    <script>
+    document.querySelectorAll('.add-to-cart-btn').forEach(function(button) {
+      button.addEventListener('click', function() {
+        const btn = this;
+        const productId = btn.getAttribute('data-product-id');
+        
+        fetch('{{ url_for("catalogue.to_cart") }}', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ value: 1, product_id: productId })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (data.status === 'success') {
+            btn.disabled = true;
+            btn.textContent = '✅ В корзине';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-outline', 'in-cart-btn');
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'default';
+          }
+        })
+        .catch(function(err) { console.error('Ошибка:', err); });
+      });
+    });
+    </script>
   </div>
 </main>
 {% endblock %}

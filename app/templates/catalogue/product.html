@@ -69,33 +69,71 @@
         {% endif %}
       {% endfor %}
 
-
-      <!-- Кнопки -->
       {% if in_cart.yes %}
-        <button class="btn btn-outline" disabled style="width:100%; font-size:1.1rem; margin-bottom:0.5rem; cursor:default;">
+        <button class="btn btn-outline" disabled style="width:100%; font-size:1.1rem; margin-bottom:0.5rem; cursor:default; opacity:0.7;">
           ✅ Уже в корзине
         </button>
       {% else %}
         <!-- Количество -->
-        <div class="quantity-selector">
+        <div class="quantity-selector" id="qty-selector">
           <span>Количество:</span>
           <button type="button" onclick="changeQty(-1)">−</button>
           <span id="qty-display">1</span>
           <button type="button" onclick="changeQty(1)">+</button>
         </div>
-        <button class="btn btn-primary" id="qty-input" product_id="{{product.id}}" value="1" style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;">
+        
+        <button class="btn btn-primary" id="add-to-cart-btn" data-product-id="{{ product.id }}" 
+                style="width:100%; font-size:1.1rem; margin-bottom:0.5rem;">
           🛒 Добавить в корзину
         </button>
       {% endif %}
 
+      <button class="btn btn-outline" style="width:100%;">
+        ❤️ В избранное
+      </button>
+
       <script>
+        // Счётчик количества
         function changeQty(delta) {
           const display = document.getElementById('qty-display');
-          const input = document.getElementById('qty-input');
+          const btn = document.getElementById('add-to-cart-btn');
           let current = parseInt(display.textContent);
           current = Math.max(1, current + delta);
           display.textContent = current;
-          input.value = current;
+          if (btn) btn.setAttribute('data-qty', current);
+        }
+
+        // Кнопка «Добавить в корзину»
+        const addBtn = document.getElementById('add-to-cart-btn');
+        if (addBtn) {
+          addBtn.setAttribute('data-qty', '1');
+          addBtn.addEventListener('click', function() {
+            const btn = this;
+            const productId = btn.getAttribute('data-product-id');
+            const qty = btn.getAttribute('data-qty');
+            
+            fetch('{{ url_for("catalogue.to_cart") }}', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ value: parseInt(qty), product_id: productId })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+              if (data.status === 'success') {
+                btn.disabled = true;
+                btn.textContent = '✅ Добавлено';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline');
+                btn.style.opacity = '0.7';
+                btn.style.cursor = 'default';
+                
+                // Скрыть счётчик после добавления
+                const selector = document.getElementById('qty-selector');
+                if (selector) selector.style.display = 'none';
+              }
+            })
+            .catch(function(err) { console.error('Ошибка:', err); });
+          });
         }
       </script>
       <script>

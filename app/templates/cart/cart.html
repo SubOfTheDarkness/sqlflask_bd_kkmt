@@ -23,7 +23,7 @@
       </thead>
       <tbody>
         {% for item in cart_items %}
-        <tr>
+        <tr id="cart-row-{{ item.item_id }}">
           <td>
             <div style="display:flex; align-items:center; gap:1rem;">
               {% if item.image %}
@@ -42,42 +42,15 @@
               </div>
             </div>
           </td>
-          <td>{{ "{:,.0f}".format(item.price).replace(",", " ") }} ₽</td>
+          <td class="item-price">{{ "{:,.0f}".format(item.price).replace(",", " ") }} ₽</td>
           <td>
             <div class="quantity-selector" style="margin:0;">
-              <button onclick="changeQual(-1)">−</button>
-              <span id="count_item">{{ item.quantity }}</span>
-              <button onclick="changeQual(1)">+</button>
+              <button type="button" onclick="changeQty(this, -1, {{ item.item_id }}, {{ item.price }})">−</button>
+              <span class="qty-display" id="qty-{{ item.item_id }}">{{ item.quantity }}</span>
+              <button type="button" onclick="changeQty(this, 1, {{ item.item_id }}, {{ item.price }})">+</button>
             </div>
           </td>
-          <script>
-          function changeQual(delta) {
-            const display = document.getElementById('count_item');
-            let current = parseInt(display.textContent);
-            current = Math.max(1,current + delta);
-            fetch(' {{ url_for('cart.update_count') }} ', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  value: current,
-                  item_id: {{item.item_id}}
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                  display.textContent = current;
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                flash(error);
-            });
-          }
-        </script>
-          <td>
+          <td class="item-total" id="total-{{ item.item_id }}">
             <strong>{{ "{:,.0f}".format(item.price * item.quantity).replace(",", " ") }} ₽</strong>
           </td>
           <td>
@@ -92,7 +65,7 @@
     <div class="cart-summary">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid #e2e8f0;">
         <span style="color:#64748b;">Товары ({{ cart_items|length }})</span>
-        <span>{{ "{:,.0f}".format(total).replace(",", " ") }} ₽</span>
+        <span id="subtotal">{{ "{:,.0f}".format(total).replace(",", " ") }} ₽</span>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <span style="color:#64748b;">Доставка</span>
@@ -100,7 +73,7 @@
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
         <span style="font-size:1.2rem; font-weight:600;">Итого</span>
-        <span class="total">{{ "{:,.0f}".format(total).replace(",", " ") }} ₽</span>
+        <span class="total" id="grand-total">{{ "{:,.0f}".format(total).replace(",", " ") }} ₽</span>
       </div>
       <a href="{{ url_for('cart.checkout') }}" class="btn btn-primary" style="width:100%; font-size:1.1rem;">
         🚀 Оформить заказ
@@ -122,4 +95,42 @@
   {% endif %}
 
 </main>
+
+<script>
+  function changeQty(btn, delta, itemId, price) {
+    const display = document.getElementById('qty-' + itemId);
+    let current = parseInt(display.textContent);
+    current = Math.max(1, current + delta);
+    
+    fetch('{{ url_for("cart.update_count") }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ value: current, item_id: itemId })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.status === 'success') {
+        display.textContent = current;
+        
+        const totalCell = document.getElementById('total-' + itemId);
+        const formatted = (price * current).toLocaleString('ru-RU') + ' ₽';
+        totalCell.innerHTML = '<strong>' + formatted + '</strong>';
+        
+        updateGrandTotal();
+      }
+    })
+    .catch(function(err) { console.error('Ошибка:', err); });
+  }
+  
+  function updateGrandTotal() {
+    let grandTotal = 0;
+    document.querySelectorAll('.item-total strong').forEach(function(el) {
+      const text = el.textContent.replace(' ₽', '').replace(/\s/g, '');
+      grandTotal += parseInt(text);
+    });
+    const formatted = grandTotal.toLocaleString('ru-RU') + ' ₽';
+    document.getElementById('subtotal').textContent = formatted;
+    document.getElementById('grand-total').textContent = formatted;
+  }
+</script>
 {% endblock %}
