@@ -9,68 +9,72 @@ from app.db import get_db
 
 bp = Blueprint('auth', __name__)
 # ========== ВХОД ==========
-@bp.route('/register', methods=('GET', 'POST'))
+@bp.route('/register')
 def register():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        db = get_db()
-        error = None
-
-        if not email:
-            error = 'E-mail is required.'
-        elif not password:
-            error = 'Password is required.'
-
-        if error is None:
-            try:
-                db.execute(
-                    "INSERT INTO user (email, password) VALUES (?, ?)",
-                    (email, generate_password_hash(password)),
-                )
-                db.commit()
-            except db.IntegrityError:
-                error = f"User with e-mail {email} is already registered."
-            else:
-                error = None
-                user = db.execute(
-                    'SELECT * FROM user WHERE email = ?', (email,)
-                ).fetchone()
-                if user is None:
-                    error = 'Incorrect email.'
-                if error is None:
-                    session.clear()
-                    session['user_id'] = user['id']
-                    return redirect(url_for('catalogue.catalogue'))
-
-        flash(error)
-
-    return render_template('auth/register.html')
-
-@bp.route('/login', methods=('GET', 'POST'))
+    return redirect(url_for('auth.auth',method='register'))
+@bp.route('/login')
 def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        db = get_db()
-        error = None
-        user = db.execute(
-            'SELECT * FROM user WHERE email = ?', (email,)
-        ).fetchone()
+    return redirect(url_for('auth.auth',method='login'))
 
-        if user is None:
-            error = 'Incorrect username.'
-        elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+@bp.route('/auth', methods=('GET', 'POST'))
+def auth():
+    method = request.args.get("tab", "Flask")
+    if(method=="register"):
+        if request.method == 'POST':
+            email = request.form['email']
+            password = request.form['password']
+            db = get_db()
+            error = None
 
-        if error is None:
-            session.clear()
-            session['user_id'] = user['id']
-            return redirect(url_for('catalogue.catalogue'))
+            if not email:
+                error = 'E-mail is required.'
+            elif not password:
+                error = 'Password is required.'
 
-        flash(error)
+            if error is None:
+                try:
+                    db.execute(
+                        "INSERT INTO user (email, password) VALUES (?, ?)",
+                        (email, generate_password_hash(password)),
+                    )
+                    db.commit()
+                except db.IntegrityError:
+                    error = f"User with e-mail {email} is already registered."
+                else:
+                    error = None
+                    user = db.execute(
+                        'SELECT * FROM user WHERE email = ?', (email,)
+                    ).fetchone()
+                    if user is None:
+                        error = 'Incorrect email.'
+                    if error is None:
+                        session.clear()
+                        session['user_id'] = user['id']
+                        return redirect(url_for('catalogue.catalogue'))
 
-    return render_template('auth/login.html')
+            flash(error)
+    else:
+        if request.method == 'POST':
+            email = request.form['email']
+            password = request.form['password']
+            db = get_db()
+            error = None
+            user = db.execute(
+                'SELECT * FROM user WHERE email = ?', (email,)
+            ).fetchone()
+
+            if user is None:
+                error = 'Incorrect username.'
+            elif not check_password_hash(user['password'], password):
+                error = 'Incorrect password.'
+
+            if error is None:
+                session.clear()
+                session['user_id'] = user['id']
+                return redirect(url_for('catalogue.catalogue'))
+
+            flash(error)
+    return render_template('auth/auth.html')
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -92,7 +96,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.auth'))
 
         return view(**kwargs)
 

@@ -23,7 +23,7 @@
         <a href="#">{{ current_user.name }}</a>
         <a href="#">Выйти</a>
       {% else %}
-        <a href="{{ url_for('auth.login') }}">Войти</a>
+        <a href="{{ url_for('auth.auth') }}">Войти</a>
       {% endif %}
     </nav>
   </header>

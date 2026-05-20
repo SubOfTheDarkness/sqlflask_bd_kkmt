@@ -64,7 +64,7 @@
 
   {% else %}
 
-  <form method="POST" action="{{ url_for('auth.login') }}">
+  <form method="POST" action="{{ url_for('auth.auth') }}">
     <div class="form-group">
       <label>Email</label>
       <input type="email" name="email" placeholder="example@mail.ru" required>
