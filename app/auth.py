@@ -1,16 +1,19 @@
 import functools
-from __init__ import serializer
-from __init__ import mail
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, current_app, flash, g, redirect, render_template, request, session, url_for
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.db import get_db
 
 bp = Blueprint('auth', __name__)
+def init_mails():
+    global mail
+    mail = Mail(current_app)
+    global serializer
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
 # ========== ВХОД ==========
 def generate_confirmation_token(email):
     return serializer.dumps(email, salt='email-confirm-salt')

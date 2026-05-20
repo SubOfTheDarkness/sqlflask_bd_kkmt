@@ -1,13 +1,10 @@
 import flask
-from flask_mail import Mail, Message
-from itsdangerous import URLSafeTimedSerializer
-import os
-
+import os 
 def create_app(test_config=None):
     app = flask.Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        DATABASE=os.path.join(app.instance_path, 'subamarket.sqlite'),
         MAIL_SERVER='smtp.googlemail.com',
         MAIL_PORT=587,
         MAIL_USE_TLS = True,
@@ -15,22 +12,21 @@ def create_app(test_config=None):
         MAIL_DEFAULT_SENDER = 'subamarket.noreply@gmail.com',
         MAIL_PASSWORD = 'Daniil.S1234',
     )
-    global mail
-    mail = Mail(app)
+    
     if test_config is None:
         app.config.from_pyfile('config.py', silent=True)
     else:
         app.config.from_mapping(test_config)
     os.makedirs(app.instance_path, exist_ok=True)
     global serializer
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     from . import db
     db.init_app(app)
-
     from . import cart
     app.register_blueprint(cart.bp)
 
     from . import auth
+    with app.app_context():
+        auth.init_mails()
     app.register_blueprint(auth.bp)
 
     from . import catalogue
