@@ -18,7 +18,7 @@ def update_count():
         return jsonify({'status': 'success'})
 
     except Exception as e:
-        return jsonify({'status': 'error'})
+        return jsonify({'status': 'error','message': str(e)})
 
 @bp.route('/cart')
 def cart():

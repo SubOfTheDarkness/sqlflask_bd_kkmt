@@ -22,7 +22,7 @@ def to_cart():
         return jsonify({'status': 'success'})
 
     except Exception as e:
-        return jsonify({'status': 'error'})
+        return jsonify({'status': 'error','message': str(e)})
 
 @bp.route('/catalogue')
 def catalogue():
