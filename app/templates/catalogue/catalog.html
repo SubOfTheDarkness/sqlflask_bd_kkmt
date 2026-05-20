@@ -28,16 +28,32 @@
       <option>📚 Книги</option>
       <option>🍎 Фрукты</option>
     </select>
-    <select>
-      <option>Сортировка</option>
-      <option>⬆ По цене (возр.)</option>
-      <option>⬇ По цене (убыв.)</option>
-    </select>
+    {% set sort_on = request.args.sort_direction|default(-1)|e|int %}
+    
+      {% if sort_on == 0%}
+        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;"></select>
+          <option>Сортировка ⬆ По цене (возр.)</option>
+          <option value="?sort_on=0">Сортировка ⬇ По цене (убыв.)</option>
+        </select>
+      {% elif sort_on == 1%}
+        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;"></select>
+          <option value="?sort_on=1">Сортировка ⬆ По цене (возр.)</option>
+          <option>Сортировка ⬇ По цене (убыв.)</option>
+        </select>
+      {% else %}
+        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;"></select>
+          <option>Сортировка</option>
+          <option value="?sort_on=1">Сортировка ⬆ По цене (возр.)</option>
+          <option value="?sort_on=0">Сортировка ⬇ По цене (убыв.)</option>
+          {% set sort_on=0 %}
+        </select>
+      {% endif %}
+    
   </div>
 
   <!-- Карточки товаров -->
   <div class="product-grid">
-    {% for product in products %}
+    {% for product in products|sort(attribute='title', reverse=sort_on) %}
     <div class="product-card">
       {% if product.discount and product.discount > 0 %}
         <span class="badge">−{{ product.discount }}%</span>
@@ -78,7 +94,7 @@
             {% set in_cart.yes = true %}
           {% endif %}
         {% endfor %}
-
+        {% set sort_on = request.args.sort_on|default('title') %}
         {% if in_cart.yes %}
           <button class="btn btn-outline in-cart-btn" disabled style="width:100%; cursor:default; opacity:0.7;">
             ✅ В корзине
