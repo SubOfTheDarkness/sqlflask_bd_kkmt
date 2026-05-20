@@ -74,7 +74,9 @@
       
       {% for item in cart_summary %}
       <div style="display:flex; justify-content:space-between; margin-bottom:0.75rem;">
-        <span>{{ item.title }} × {{ item.quantity }}</span>
+        <span><a href="{{ url_for('catalogue.product', product_id=item.id) }}" 
+                     style="color:inherit; text-decoration:none;">
+                    {{ item.title }} </a> × {{ item.quantity }}</span>
         <span>{{ "{:,.0f}".format(item.subtotal * item.quantity).replace(",", " ") }} ₽</span>
       </div>
       {% endfor %}

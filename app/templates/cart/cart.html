@@ -33,7 +33,7 @@
               {% endif %}
               <div>
                 <strong>
-                  <a href="{{ url_for('catalogue.product', product_id=item.id) }}" 
+                  <a href="{{ url_for('catalogue.product', product_id=item.product_id) }}" 
                      style="color:inherit; text-decoration:none;">
                     {{ item.title }}
                   </a>
@@ -45,11 +45,38 @@
           <td>{{ "{:,.0f}".format(item.price).replace(",", " ") }} ₽</td>
           <td>
             <div class="quantity-selector" style="margin:0;">
-              <button>−</button>
-              <span>{{ item.quantity }}</span>
-              <button>+</button>
+              <button onclick="changeQual(-1)">−</button>
+              <span id="count_item">{{ item.quantity }}</span>
+              <button onclick="changeQual(1)">+</button>
             </div>
           </td>
+          <script>
+          function changeQual(delta) {
+            const display = document.getElementById('count_item');
+            let current = parseInt(display.textContent);
+            current = Math.max(1,current + delta);
+            fetch(' {{ url_for('cart.update_count') }} ', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  value: current,
+                  item_id: {{item.item_id}}
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                  display.textContent = current;
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                flash(error);
+            });
+          }
+        </script>
           <td>
             <strong>{{ "{:,.0f}".format(item.price * item.quantity).replace(",", " ") }} ₽</strong>
           </td>
