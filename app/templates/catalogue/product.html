@@ -122,7 +122,7 @@
                 btn.classList.add('btn-outline');
                 btn.style.opacity = '0.7';
                 btn.style.cursor = 'default';
-                showToast("Добавлено в корзину", success);
+                showToast("Добавлено в корзину", 'success');
                 // Скрыть счётчик после добавления
                 const selector = document.getElementById('qty-selector');
                 if (selector) selector.style.display = 'none';
@@ -135,38 +135,6 @@
           });
         }
       </script>
-      <script>
-        document.getElementById('qty-input').addEventListener('click', function() {
-            const button = this;
-            const record = button.getAttribute('value');
-            const product_id = button.getAttribute('product_id')
-            fetch(' {{ url_for('catalogue.to_cart') }} ', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    value: record,
-                    product_id: product_id
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                  button.disabled = true;
-                  button.textContent = '✅ В корзине';
-                  button.classList.toggle("btn btn-primary");
-                  button.classList.toggle("btn btn-outline");
-                  button.setAttribute('cursor', 'default');
-                  showToast("Добавлено в корзину", "success");
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                showToast("Ошибка соединения с сервером", "error");
-            });
-        });
-        </script>
     </div>
   </div>
 </main>
