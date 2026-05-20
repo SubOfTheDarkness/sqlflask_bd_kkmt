@@ -1,5 +1,8 @@
 import functools
-
+from __init__ import serializer
+from __init__ import mail
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
@@ -9,6 +12,27 @@ from app.db import get_db
 
 bp = Blueprint('auth', __name__)
 # ========== ВХОД ==========
+def generate_confirmation_token(email):
+    return serializer.dumps(email, salt='email-confirm-salt')
+
+def confirm_token(token, expiration=3600):
+    try:
+        email = serializer.loads(token, salt='email-confirm-salt', max_age=expiration)
+    except:
+        return False
+    return email
+@bp.route('/confirm/<token>')
+def confirm_email(token):
+    email = confirm_token(token)
+    if not email:
+        return 'Ссылка подтверждения недействительна или истекла.', 400
+    
+    db = get_db()
+    db.execute(
+        "UPDATE user SET flag_confirmed=1 WHERE email=?",(email)
+    )
+    db.commit()
+    return f'Почта {email} успешно подтверждена!'
 @bp.route('/register')
 def register():
     return redirect(url_for('auth.auth',method='register'))
@@ -19,8 +43,9 @@ def login():
 @bp.route('/auth', methods=('GET', 'POST'))
 def auth():
     method = request.args.get("tab", "Flask")
-    if(method=="register"):
-        if request.method == 'POST':
+    
+    if request.method == 'POST':
+        if(method=="register"):
             email = request.form['email']
             password = request.form['password']
             db = get_db()
@@ -30,7 +55,8 @@ def auth():
                 error = 'E-mail is required.'
             elif not password:
                 error = 'Password is required.'
-
+            elif not '@' in email and not '.' in email:
+                error = 'This is not e-mail.'
             if error is None:
                 try:
                     db.execute(
@@ -42,19 +68,10 @@ def auth():
                     error = f"User with e-mail {email} is already registered."
                 else:
                     error = None
-                    user = db.execute(
-                        'SELECT * FROM user WHERE email = ?', (email,)
-                    ).fetchone()
-                    if user is None:
-                        error = 'Incorrect email.'
-                    if error is None:
-                        session.clear()
-                        session['user_id'] = user['id']
-                        return redirect(url_for('catalogue.catalogue'))
+                    return "<p>Ссылка на подтверждение отправлена Вам на почту</p>"
 
             flash(error)
-    else:
-        if request.method == 'POST':
+        else:
             email = request.form['email']
             password = request.form['password']
             db = get_db()

@@ -32,19 +32,19 @@
     
       {% if sort_on == 0%}
         <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
-          <option value="?sort_direction=0">Сортировка ⬇ По цене (убыв.)</option>
-          <option value="?sort_direction=1">Сортировка ⬆ По цене (возр.)</option>
+          <option value={{url_for('catalogue.catalogue',sort_direction=0)}}>Сортировка ⬇ По цене (убыв.)</option>
+          <option value={{url_for('catalogue.catalogue',sort_direction=1)}}>Сортировка ⬆ По цене (возр.)</option>
         </select>
       {% elif sort_on == 1%}
         <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
-          <option value="?sort_direction=1">Сортировка ⬆ По цене (возр.)</option>
-          <option value="?sort_direction=0">Сортировка ⬇ По цене (убыв.)</option>
+          <option value={{url_for('catalogue.catalogue',sort_direction=1)}}>Сортировка ⬆ По цене (возр.)</option>
+          <option value={{url_for('catalogue.catalogue',sort_direction=0)}}>Сортировка ⬇ По цене (убыв.)</option>
         </select>
       {% else %}
         <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
           <option>Сортировка</option>
-          <option value="?sort_direction=1">Сортировка ⬆ По цене (возр.)</option>
-          <option value="?sort_direction=0">Сортировка ⬇ По цене (убыв.)</option>
+          <option value={{url_for('catalogue.catalogue',sort_direction=1)}}>Сортировка ⬆ По цене (возр.)</option>
+          <option value={{url_for('catalogue.catalogue',sort_direction=0)}}>Сортировка ⬇ По цене (убыв.)</option>
           {% set sort_on=0 %}
         </select>
       {% endif %}
@@ -137,7 +137,7 @@
         })
         .catch(function(err) {
           console.error('Ошибка:', err);
-          showToast("Ошибка соединения с сервером", "error");
+          showToast(error, "error");
         });
       });
     });
