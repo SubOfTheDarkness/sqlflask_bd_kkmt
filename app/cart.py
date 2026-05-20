@@ -25,7 +25,7 @@ def cart():
     """Страница корзины."""
     db = get_db()
     cart_items = db.execute(
-        'SELECT c.id AS item_id,c.product_id, p.title, p.price, c.quantity, p.category, p.image'
+        'SELECT c.id AS item_id,c.product_id, p.title, p.price*(1-p.discount/100.0) AS price, c.quantity, p.category, p.image'
         ' FROM cart c'
         ' JOIN product p ON p.id = c.product_id'
     ).fetchall()

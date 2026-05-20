@@ -210,10 +210,6 @@ nav a:hover::after {
   color: var(--primary);
 }
 
-.btn-outline:hover {
-  background: var(--primary);
-  color: white;
-}
 
 .btn-danger {
   background: #ef4444;

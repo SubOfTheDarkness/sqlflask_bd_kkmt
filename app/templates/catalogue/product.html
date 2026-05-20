@@ -40,28 +40,27 @@
       <span class="category" style="font-size:0.9rem;">{{ cat_icon }} {{ product.category }}</span>
       
       <h1>{{ product.title }}</h1>
-      
-      <!-- Цена -->
-      <div style="font-size:2rem; font-weight:700; color:#6366f1; margin:1rem 0;">
-        {{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽
-      </div>
-      
-      {% if product.discount and product.discount > 0 %}
-        {% set old_price = (product.price / (1 - product.discount/100))|round|int %}
-        <span style="font-size:1.1rem; color:#64748b; text-decoration:line-through; margin-right:1rem;">
-          {{ "{:,.0f}".format(old_price).replace(",", " ") }} ₽
-        </span>
-        <span style="display:inline-block; background:#22c55e; color:white; padding:0.3rem 0.8rem; border-radius:100px; font-size:0.85rem; font-weight:600;">
-          −{{ product.discount }}%
-        </span>
-      {% endif %}
-
       <!-- Описание -->
       {% if product.description %}
       <p style="margin:1.5rem 0; line-height:1.7;">
         {{ product.description }}
       </p>
       {% endif %}
+      <!-- Цена -->
+      
+      {% if product.discount and product.discount > 0 %}
+        {% set new_price = (product.price * (1 - product.discount/100))|round|int %}
+        <div style="font-size:2rem; font-weight:700; color:#6366f1; margin:1rem 0;">
+          {{ "{:,.0f}".format(new_price).replace(",", " ") }} ₽
+        </div>
+        <span style="font-size:1.1rem; color:#64748b; text-decoration:line-through; margin-right:1rem;">{{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽</span>
+        <span style="display:inline-block; background:#22c55e; color:white; padding:0.3rem 0.8rem; border-radius:100px; font-size:0.85rem; font-weight:600;">−{{ product.discount }}%</span>
+      {% else %} <div style="font-size:2rem; font-weight:700; color:#6366f1; margin:1rem 0;">
+          {{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽
+        </div> 
+      {% endif %}
+
+      
       {% set in_cart = namespace(yes=false) %}
       {% for cart_item in carts %}
         {% if product.id == cart_item.product_id %}
@@ -87,10 +86,6 @@
           🛒 Добавить в корзину
         </button>
       {% endif %}
-
-      <button class="btn btn-outline" style="width:100%;">
-        ❤️ В избранное
-      </button>
 
       <script>
         // Счётчик количества

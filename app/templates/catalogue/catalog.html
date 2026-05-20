@@ -62,12 +62,15 @@
         </span>
         <h3>{{ product.title }}</h3>
         
-        <span class="price">{{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽</span>
-        
         {% if product.discount and product.discount > 0 %}
-          {% set old_price = (product.price / (1 - product.discount/100))|round|int %}
-          <span class="old-price">{{ "{:,.0f}".format(old_price).replace(",", " ") }} ₽</span>
+          {% set new_price = (product.price * (1 - product.discount/100))|round|int %}
+          <span class="price">{{ "{:,.0f}".format(new_price).replace(",", " ") }} ₽</span>
+          <span class="old-price">{{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽</span>
+        {% else %} <span class="price">{{ "{:,.0f}".format(product.price).replace(",", " ") }} ₽</span>
         {% endif %}
+        
+        
+        
         
         {% set in_cart = namespace(yes=false) %}
         {% for cart_item in carts %}
