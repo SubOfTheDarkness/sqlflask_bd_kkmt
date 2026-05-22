@@ -20,32 +20,40 @@
 
   <!-- Фильтры -->
   <div class="filters">
-    <input type="text" placeholder="🔍 Поиск товаров...">
-    <select>
-      <option>Все категории</option>
-      <option>📱 Электроника</option>
-      <option>👕 Одежда</option>
-      <option>📚 Книги</option>
-      <option>🍎 Фрукты</option>
-    </select>
-    {% set sort_on = request.args.sort_direction|default(0)|e|int %}
-    
-      {% if sort_on == 0%}
-        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
-          <option value="{{url_for('catalogue.catalogue',sort_direction=0, _anchor='catalogue')}}">Сортировка ⬇ По цене (убыв.)</option>
-          <option value="{{url_for('catalogue.catalogue',sort_direction=1, _anchor='catalogue')}}">Сортировка ⬆ По цене (возр.)</option>
-        </select>
-      {% elif sort_on == 1%}
-        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
-          <option value="{{url_for('catalogue.catalogue',sort_direction=1, _anchor='catalogue')}}">Сортировка ⬆ По цене (возр.)</option>
-          <option value="{{url_for('catalogue.catalogue',sort_direction=0, _anchor='catalogue')}}">Сортировка ⬇ По цене (убыв.)</option>
-        </select>
+    <form method="GET" action="{{ url_for('catalogue.catalogue') }}" style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; width:100%;">
+      <input type="text" name="search" placeholder="🔍 Поиск товаров..." value="{{ search }}" style="flex:1; min-width:200px;">
+      
+      <select name="category" onchange="this.form.submit()">
+        <option value="">Все категории</option>
+        {% for cat in categories %}
+        <option value="{{ cat.category }}" {% if category_filter == cat.category %}selected{% endif %}>
+          {% if cat.category == 'Электроника' %}📱
+          {% elif cat.category == 'Одежда' %}👕
+          {% elif cat.category == 'Книги' %}📚
+          {% elif cat.category == 'Фрукты' %}🍎
+          {% elif cat.category == 'Обувь' %}👢
+          {% else %}📦{% endif %}
+          {{ cat.category }}
+        </option>
+        {% endfor %}
+      </select>
+      
+      <select name="sort_direction" onchange="this.form.submit()">
+        <option value="0" {% if sort_direction == '0' %}selected{% endif %}>⬇ По цене (убыв.)</option>
+        <option value="1" {% if sort_direction == '1' %}selected{% endif %}>⬆ По цене (возр.)</option>
+      </select>
+      
+      {% if search or category_filter %}
+      <a href="{{ url_for('catalogue.catalogue') }}" class="btn btn-outline" style="font-size:0.85rem;">✕ Сбросить</a>
       {% endif %}
-    
+      
+      <button type="submit" class="btn btn-primary" style="font-size:0.9rem;">🔍 Найти</button>
+    </form>
   </div>
+
   <!-- Карточки товаров -->
   <div class="product-grid">
-    {% for product in products|sort(attribute='title', reverse=sort_on) %}
+    {% for product in products %}
     <div class="product-card">
       {% if product.discount and product.discount > 0 %}
         <span class="badge">−{{ product.discount }}%</span>
