@@ -39,9 +39,11 @@ def catalogue():
         carts = db.execute(
             'SELECT product_id FROM cart WHERE user_id = ?', (g.user['id'],)
         ).fetchall()
+        cart_count = len(carts)
     else:
         carts=[{"product_id": None}]
-    return render_template('catalogue/catalog.html', products=products, carts=carts)
+        cart_count = None
+    return render_template('catalogue/catalog.html', products=products, carts=carts, cart_count=cart_count)
 
 
 @bp.route('/product')
@@ -58,7 +60,8 @@ def product(product_id=1):
         carts = db.execute(
             'SELECT product_id FROM cart WHERE user_id = ?', (g.user['id'],)
         ).fetchall()
+        cart_count = len(carts)
     else:
         carts=[{"product_id": None}]
-
-    return render_template('catalogue/product.html', product=product, carts=carts)
+        cart_count = None
+    return render_template('catalogue/product.html', product=product, carts=carts, cart_count=cart_count)

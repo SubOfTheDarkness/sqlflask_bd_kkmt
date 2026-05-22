@@ -1,10 +1,12 @@
 from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
+from app.auth import admin_required
 from app.db import get_db
 
 bp = Blueprint('admin', __name__)
 
 
 @bp.route('/admin')
+@admin_required
 def admin():
     import os
     db = get_db()
@@ -140,3 +142,4 @@ def update_cart_item(cart_id):
     db.commit()
     flash('Количество обновлено', 'success')
     return redirect(url_for('admin.admin', tab='carts'))
+

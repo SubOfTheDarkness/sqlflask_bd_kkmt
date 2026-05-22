@@ -26,7 +26,6 @@ def update_count():
 def delete_product():
     data = request.get_json()
     item_ids = data.get('item_id')
-    print(item_ids)
     try:
         db = get_db()
         db.execute(

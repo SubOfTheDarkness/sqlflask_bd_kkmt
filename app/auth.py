@@ -50,10 +50,14 @@ def confirm_email(token):
 @bp.route('/register')
 def register():
     return redirect(url_for('auth.auth',method='register'))
-    
+
 @bp.route('/login')
 def login():
     return redirect(url_for('auth.auth',method='login'))
+
+@bp.route('/need_admin')
+def need_admin():
+    return render_template('auth/need_admin.html')
 
 @bp.route('/auth', methods=('GET', 'POST'))
 def auth():
@@ -86,9 +90,9 @@ def auth():
                     mail.send(msg)
                 except db.IntegrityError:
                     error = f"User with e-mail {email} is already registered."
-                except:
+                except Exception as e:
                     db.rollback()
-                    error = "Ошибка в генерации токена подтверждения электронной почты"
+                    error = e
                 else:
                     if error is None:
                         db.commit()
@@ -110,14 +114,14 @@ def auth():
             elif not check_password_hash(user['password'], password):
                 error = 'Incorrect password.'
             elif user['flag_confirmed']==0:
-                error = 'User not confirm email'
+                error = 'Пользователь не подтвердил почту'
             if error is None:
                 session.clear()
                 session['user_id'] = user['id']
+                session['flag_admin'] = user['flag_admin']
                 return redirect(url_for('catalogue.catalogue'))
             input_data = request.form.to_dict()
             flash(error,'error')
-    print(input_data)
     return render_template('auth/auth.html', input_data=input_data)
 
 @bp.before_app_request
@@ -144,4 +148,12 @@ def login_required(view):
 
         return view(**kwargs)
 
+    return wrapped_view
+
+def admin_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if not g.user or g.user['flag_admin']==0:
+            return redirect(url_for('auth.need_admin'))
+        return view(**kwargs)
     return wrapped_view

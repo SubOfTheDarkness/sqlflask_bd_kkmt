@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Suba Market{% endblock %}</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <style>
     /* Плашка уведомлений */
@@ -111,6 +112,9 @@
   <header>
     <div class="logo"><a href="{{ url_for('catalogue.catalogue') }}">✨ Suba Market</a></div>
     <nav>
+      {% if g.user and g.user['flag_admin']==1%}
+      <a href="{{ url_for('admin.admin') }}" style="background:#f97316; color:white; padding:0.5rem 1rem; border-radius:100px;">👑 Админ</a>
+      {%endif%}
       <a href="{{ url_for('catalogue.catalogue') }}">Каталог</a>
       <a href="{{ url_for('cart.cart') }}" class="cart-icon">
         🛒 Корзина
@@ -124,7 +128,6 @@
       {% else %}
         <a href="{{ url_for('auth.auth') }}">Войти</a>
       {% endif %}
-      <a href="{{ url_for('admin.admin') }}" style="background:#f97316; color:white; padding:0.5rem 1rem; border-radius:100px;">👑 Админ</a>
     </nav>
   </header>
 

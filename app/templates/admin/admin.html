@@ -267,11 +267,9 @@
               <td>{{ u.id }}</td>
               <td>{{ u.email }}</td>
               <td>
-                <form method="POST" action="{{ url_for('admin.admin') }}" style="display:inline;">
-                  <button type="submit" class="btn-icon">
-                    {% if u.flag_admin %}✅{% else %}⬜{% endif %}
-                  </button>
-                </form>
+                <button type="submit" class="btn-icon">
+                  {% if u.flag_admin %}✅{% else %}⬜{% endif %}
+                </button>
               </td>
               <td>
                 <form method="POST" action="{{ url_for('admin.toggle_confirmation', user_id=u.id) }}" style="display:inline;">

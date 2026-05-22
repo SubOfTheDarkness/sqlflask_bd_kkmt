@@ -3,16 +3,19 @@ import os
 def create_app(test_config=None):
     app = flask.Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY=b'dev',
+        SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'subamarket.sqlite'),
-        MAIL_SERVER='smtp.googlemail.com',
+        MAIL_SERVER='smtp.gmail.com', #Google
+        #MAIL_SERVER='smtp.yandex.ru', #Yandex
         MAIL_PORT=587,
         MAIL_USE_TLS = True,
-        MAIL_USERNAME = 'subamarket.noreply@gmail.com',
-        MAIL_DEFAULT_SENDER = 'subamarket.noreply@gmail.com',
-        MAIL_PASSWORD = 'rbhaqqwbxgoloskg',
+        MAIL_USERNAME = 'subamarket.noreply@gmail.com', # Google
+        MAIL_PASSWORD = 'rbhaqqwbxgoloskg', #Google
+        #MAIL_USERNAME = 'subamarket.noreply@yandex.ru', #Yandex
+        #MAIL_PASSWORD = 'xzrpbpdttnomgnky', #Yandex
+        #MAIL_DEFAULT_SENDER = 'subamarket.noreply@yandex.ru', #Yandex
+        MAIL_DEFAULT_SENDER = 'subamarket.noreply@gmail.com', #Google
     )
-    
     if test_config is None:
         app.config.from_pyfile('config.py', silent=True)
     else:

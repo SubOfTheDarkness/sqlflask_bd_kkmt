@@ -93,16 +93,9 @@ nav a:hover::after {
 }
 
 .cart-icon {
-  background: var(--primary-light);
-  padding: 0.5rem 1rem;
-  border-radius: 100px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.cart-icon:hover {
-  background: #ffedd5;
 }
 
 .cart-count {
