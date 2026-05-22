@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Админ-панель — MyShop{% endblock %}
+{% block title %}Админ-панель — Suba Market{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -35,7 +35,6 @@
     color: var(--primary);
   }
   
-  /* Единый стиль для всех полей */
   .admin-input,
   .admin-table input,
   .admin-table select,
@@ -172,15 +171,15 @@
     
     <aside class="admin-sidebar">
       <h3 style="margin-bottom:1rem;">⚙️ Админ</h3>
-      <a class="active" onclick="showTab('products')">📦 Товары</a>
-      <a onclick="showTab('users')">👥 Пользователи</a>
-      <a onclick="showTab('carts')">🛒 Корзины</a>
+      <a class="active" onclick="switchTab('products')">📦 Товары</a>
+      <a onclick="switchTab('users')">👥 Пользователи</a>
+      <a onclick="switchTab('carts')">🛒 Корзины</a>
     </aside>
 
     <section>
       
       <!-- ===== ТОВАРЫ ===== -->
-      <div id="tab-products">
+      <div id="tab-products" style="display:none;">
         <h2 style="margin-bottom:1rem;">📦 Товары</h2>
 
         <details>
@@ -268,9 +267,11 @@
               <td>{{ u.id }}</td>
               <td>{{ u.email }}</td>
               <td>
-                <button type="submit" disabled class="btn-icon">
-                  {% if u.flag_admin %}✅{% else %}⬜{% endif %}
-                </button>
+                <form method="POST" action="{{ url_for('admin.admin') }}" style="display:inline;">
+                  <button type="submit" class="btn-icon">
+                    {% if u.flag_admin %}✅{% else %}⬜{% endif %}
+                  </button>
+                </form>
               </td>
               <td>
                 <form method="POST" action="{{ url_for('admin.toggle_confirmation', user_id=u.id) }}" style="display:inline;">
@@ -326,12 +327,27 @@
 </main>
 
 <script>
-  function showTab(tab) {
+  function switchTab(tab) {
     document.querySelectorAll('[id^="tab-"]').forEach(function(el) { el.style.display = 'none'; });
     document.getElementById('tab-' + tab).style.display = 'block';
     document.querySelectorAll('.admin-sidebar a').forEach(function(a) { a.classList.remove('active'); });
     event.target.classList.add('active');
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url);
   }
+
+  // При загрузке
+  const params = new URLSearchParams(window.location.search);
+  const activeTab = params.get('tab') || 'products';
+  document.getElementById('tab-' + activeTab).style.display = 'block';
+  document.querySelectorAll('.admin-sidebar a').forEach(function(a) {
+    a.classList.remove('active');
+    const tabNames = { products: 'Товары', users: 'Пользователи', carts: 'Корзины' };
+    if (a.textContent.trim().includes(tabNames[activeTab])) {
+      a.classList.add('active');
+    }
+  });
 
   function previewImage(select) {
     const preview = document.getElementById('image-preview');

@@ -1,2 +1,21 @@
-<p>Почта {{email}} успешно подтверждена!</p>
-<a href="{{ url_for('catalogue.catalogue') }}">✨ Suba Market</a>
+{% extends "base.html" %}
+
+{% block title %}Почта подтверждена — Suba Market{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="auth-form" style="text-align:center;">
+  <div style="font-size:4rem; margin-bottom:1rem;">🎉</div>
+  <h2 style="margin-bottom:0.5rem; color:#22c55e;">Почта подтверждена!</h2>
+  <p style="color:#64748b; margin-bottom:0.5rem;">
+    {{ email }}
+  </p>
+  <p style="color:#64748b; margin-bottom:2rem;">
+    Ваш аккаунт успешно активирован. Теперь вы можете войти.
+  </p>
+  <a href="{{ url_for('auth.auth', tab='login') }}" class="btn btn-primary" style="width:100%;">
+    Войти в аккаунт
+  </a>
+</div>
+{% endblock %}

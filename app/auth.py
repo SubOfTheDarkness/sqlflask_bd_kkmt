@@ -28,23 +28,24 @@ def confirm_token(token, expiration=3600):
 @bp.route('/confirm/<token>')
 def confirm_email(token):
     email = confirm_token(token)
-    print(email)
-    error=None
+    error = None
     if not email:
         return 'Ссылка подтверждения недействительна или истекла.', 400
+
     db = get_db()
     try:
         db.execute("BEGIN")
         db.execute(
-            "UPDATE user SET flag_confirmed=1 WHERE email=?",(email,)
+            "UPDATE user SET flag_confirmed=1 WHERE email=?", (email,)
         )
     except:
         db.rollback()
         error = "Ошибка в БД"
     else:
         db.commit()
-        return render_template('auth/confirmed.html',email=email)
-    flash(error)
+        return render_template('auth/confirmed.html', email=email)
+    flash(error, 'error')
+    return redirect(url_for('auth.auth'))
 
 @bp.route('/register')
 def register():
