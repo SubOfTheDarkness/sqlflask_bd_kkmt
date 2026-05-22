@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Корзина — MyShop{% endblock %}
+{% block title %}Корзина — Suba Market{% endblock %}
 
 {% block content %}
 <main class="container" style="margin-top:2rem;">
@@ -54,7 +54,7 @@
             <strong>{{ "{:,.0f}".format(item.price * item.quantity).replace(",", " ") }} ₽</strong>
           </td>
           <td>
-            <button class="btn btn-danger" style="padding:0.4rem 0.8rem; border-radius:50%;" 
+            <button id="btn-del-{{ item.item_id }}" onclick="delFromCart({{ item.item_id }})" class="btn btn-danger" style="padding:0.4rem 0.8rem; border-radius:50%;" 
                     title="Удалить">✕</button>
           </td>
         </tr>
@@ -72,7 +72,13 @@
         <span style="color:#22c55e;">Бесплатно</span>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <span style="font-size:1.2rem; font-weight:600;">Итого</span>
+        <span style="font-size:1.2rem; font-weight:600;">Итого</spandisplay.textContent = current;
+        
+        const totalCell = document.getElementById('total-' + itemId);
+        const formatted = (price * current).toLocaleString('ru-RU') + ' ₽' + ' :';
+        totalCell.innerHTML = '<strong>' + formatted + '</strong>
+        
+        <script>updateGrandTotal()</script>
         <span class="total" id="grand-total">{{ "{:,.0f}".format(total).replace(",", " ") }} ₽</span>
       </div>
       <a href="{{ url_for('cart.checkout') }}" class="btn btn-primary" style="width:100%; font-size:1.1rem;">
@@ -118,10 +124,41 @@
         
         updateGrandTotal();
       }
+      if (data.status == 'error') {
+        console.warn('Ошибка:', data.message);
+        showToast(data.message, "error");
+      }
     })
-    .catch(function(err) { console.error('Ошибка:', err); });
+    .catch(function(err) {
+      console.error('Ошибка:', err);
+      showToast(err,'error');
+    });
   }
-  
+  function delFromCart(itemId) {
+    fetch('{{ url_for("cart.delete_product") }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_id: itemId })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.status === 'success') {
+        const product_cell = document.getElementById('cart-row-' + itemId);
+        product_cell.style.backgroundColor = 'red';
+        const buttons = product_cell.querySelectorAll('button');
+        buttons.forEach(button => button.disabled = true);
+        updateGrandTotal();
+      }
+      if (data.status == 'error') {
+        console.warn('Ошибка:', data.message);
+        showToast(data.message, "error");
+      }
+    })
+    .catch(function(err) {
+      console.error('Ошибка:', err);
+      showToast(err,'error');
+    });
+  }
   function updateGrandTotal() {
     let grandTotal = 0;
     document.querySelectorAll('.item-total strong').forEach(function(el) {

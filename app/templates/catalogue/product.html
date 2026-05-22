@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ product.title }} — MyShop{% endblock %}
+{% block title %}{{ product.title }} — Suba Market{% endblock %}
 
 {% block breadcrumbs %}
 <nav style="max-width:1200px; margin:1.5rem auto 0; padding:0 2rem; font-size:0.9rem; color:#64748b;">
@@ -115,7 +115,7 @@
             })
             .then(function(res) { return res.json(); })
             .then(function(data) {
-              if (data.status === 'success') {
+              if (data.status == 'success') {
                 btn.disabled = true;
                 btn.textContent = '✅ Добавлено';
                 btn.classList.remove('btn-primary');
@@ -126,6 +126,10 @@
                 // Скрыть счётчик после добавления
                 const selector = document.getElementById('qty-selector');
                 if (selector) selector.style.display = 'none';
+              }
+              if (data.status == 'error') {
+                console.warn('Ошибка:', data.message);
+                showToast(data.message, "error");
               }
             })
             .catch(function(err) {

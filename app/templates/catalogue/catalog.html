@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Каталог — MyShop{% endblock %}
+{% block title %}Каталог — Suba Market{% endblock %}
 
 {% block content %}
 <!-- Hero-секция -->
@@ -28,24 +28,17 @@
       <option>📚 Книги</option>
       <option>🍎 Фрукты</option>
     </select>
-    {% set sort_on = request.args.sort_direction|default(-1)|e|int %}
+    {% set sort_on = request.args.sort_direction|default(0)|e|int %}
     
       {% if sort_on == 0%}
         <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
-          <option value={{url_for('catalogue.catalogue',sort_direction=0)}}>Сортировка ⬇ По цене (убыв.)</option>
-          <option value={{url_for('catalogue.catalogue',sort_direction=1)}}>Сортировка ⬆ По цене (возр.)</option>
+          <option value="{{url_for('catalogue.catalogue',sort_direction=0, _anchor='catalogue')}}">Сортировка ⬇ По цене (убыв.)</option>
+          <option value="{{url_for('catalogue.catalogue',sort_direction=1, _anchor='catalogue')}}">Сортировка ⬆ По цене (возр.)</option>
         </select>
       {% elif sort_on == 1%}
         <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
-          <option value={{url_for('catalogue.catalogue',sort_direction=1)}}>Сортировка ⬆ По цене (возр.)</option>
-          <option value={{url_for('catalogue.catalogue',sort_direction=0)}}>Сортировка ⬇ По цене (убыв.)</option>
-        </select>
-      {% else %}
-        <select id="select_direction" onchange="window.location = this.options[this.selectedIndex].value;">
-          <option>Сортировка</option>
-          <option value={{url_for('catalogue.catalogue',sort_direction=1)}}>Сортировка ⬆ По цене (возр.)</option>
-          <option value={{url_for('catalogue.catalogue',sort_direction=0)}}>Сортировка ⬇ По цене (убыв.)</option>
-          {% set sort_on=0 %}
+          <option value="{{url_for('catalogue.catalogue',sort_direction=1, _anchor='catalogue')}}">Сортировка ⬆ По цене (возр.)</option>
+          <option value="{{url_for('catalogue.catalogue',sort_direction=0, _anchor='catalogue')}}">Сортировка ⬇ По цене (убыв.)</option>
         </select>
       {% endif %}
     
@@ -134,10 +127,14 @@
             btn.style.cursor = 'default';
             showToast("Добавлено в корзину", "success");
           }
+          else if (data.status === 'error') {
+            console.warn('Ошибка:', data.message);
+            showToast(data.message, "error");
+          }
         })
         .catch(function(err) {
           console.error('Ошибка:', err);
-          showToast(error, "error");
+          showToast(err, "error");
         });
       });
     });

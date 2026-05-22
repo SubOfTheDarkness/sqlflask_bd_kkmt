@@ -24,21 +24,32 @@ def confirm_token(token, expiration=3600):
     except:
         return False
     return email
+
 @bp.route('/confirm/<token>')
 def confirm_email(token):
     email = confirm_token(token)
+    print(email)
+    error=None
     if not email:
         return 'Ссылка подтверждения недействительна или истекла.', 400
-    
     db = get_db()
-    db.execute(
-        "UPDATE user SET flag_confirmed=1 WHERE email=?",(email)
-    )
-    db.commit()
-    return f'Почта {email} успешно подтверждена!'
+    try:
+        db.execute("BEGIN")
+        db.execute(
+            "UPDATE user SET flag_confirmed=1 WHERE email=?",(email,)
+        )
+    except:
+        db.rollback()
+        error = "Ошибка в БД"
+    else:
+        db.commit()
+        return render_template('auth/confirmed.html',email=email)
+    flash(error)
+
 @bp.route('/register')
 def register():
     return redirect(url_for('auth.auth',method='register'))
+    
 @bp.route('/login')
 def login():
     return redirect(url_for('auth.auth',method='login'))
@@ -46,9 +57,9 @@ def login():
 @bp.route('/auth', methods=('GET', 'POST'))
 def auth():
     method = request.args.get("tab", "Flask")
-    
+    input_data=None
     if request.method == 'POST':
-        if(method=="register"):
+        if(method=='register'):
             email = request.form['email']
             password = request.form['password']
             db = get_db()
@@ -58,23 +69,34 @@ def auth():
                 error = 'E-mail is required.'
             elif not password:
                 error = 'Password is required.'
-            elif not '@' in email and not '.' in email:
-                error = 'This is not e-mail.'
+            #elif not '@' in email and not '.' in email:
+            #    error = 'This is not e-mail.'
             if error is None:
                 try:
+                    db.execute("BEGIN")
                     db.execute(
                         "INSERT INTO user (email, password) VALUES (?, ?)",
-                        (email, generate_password_hash(password)),
+                        (email, generate_password_hash(password),),
                     )
-                    db.commit()
+                    token = generate_confirmation_token(email)
+                    confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+                    html = render_template('auth/activate.html', confirm_url=confirm_url)
+                    msg = Message('Подтверждение аккаунт', recipients=[email], html=html)
+                    mail.send(msg)
                 except db.IntegrityError:
                     error = f"User with e-mail {email} is already registered."
+                except:
+                    db.rollback()
+                    error = "Ошибка в генерации токена подтверждения электронной почты"
                 else:
-                    error = None
-                    return "<p>Ссылка на подтверждение отправлена Вам на почту</p>"
+                    if error is None:
+                        db.commit()
+                        error = None
+                        return render_template('auth/sent_email.html')
+            input_data = request.form.to_dict()
+            flash(error,'error')
 
-            flash(error)
-        else:
+        elif(method=='login'):
             email = request.form['email']
             password = request.form['password']
             db = get_db()
@@ -82,19 +104,20 @@ def auth():
             user = db.execute(
                 'SELECT * FROM user WHERE email = ?', (email,)
             ).fetchone()
-
             if user is None:
                 error = 'Incorrect username.'
             elif not check_password_hash(user['password'], password):
                 error = 'Incorrect password.'
-
+            elif user['flag_confirmed']==0:
+                error = 'User not confirm email'
             if error is None:
                 session.clear()
                 session['user_id'] = user['id']
                 return redirect(url_for('catalogue.catalogue'))
-
-            flash(error)
-    return render_template('auth/auth.html')
+            input_data = request.form.to_dict()
+            flash(error,'error')
+    print(input_data)
+    return render_template('auth/auth.html', input_data=input_data)
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -121,7 +144,3 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
-# @bp.route('/login')
-# def login():
-#     """Страница входа и регистрации."""
-#     return render_template('auth/login.html')

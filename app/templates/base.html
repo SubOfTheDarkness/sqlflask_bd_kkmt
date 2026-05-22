@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}MyShop{% endblock %}</title>
+  <title>{% block title %}Suba Market{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <style>
     /* Плашка уведомлений */
@@ -61,47 +61,6 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body>
-  <!-- Контейнер для плашек -->
-  <div class="toast-container" id="toast-container"></div>
-
-  <!-- Шапка -->
-  <header>
-    <div class="logo"><a href="{{ url_for('catalogue.catalogue') }}">✨ MyShop</a></div>
-    <nav>
-      <a href="{{ url_for('catalogue.catalogue') }}">Каталог</a>
-      <a href="{{ url_for('cart.cart') }}" class="cart-icon">
-        🛒 Корзина
-        {% if cart_count and cart_count > 0 %}
-          <span class="cart-count">{{ cart_count }}</span>
-        {% endif %}
-      </a>
-      {% if current_user %}
-        <a href="#">{{ current_user.name }}</a>
-        <a href="#">Выйти</a>
-      {% else %}
-        <a href="{{ url_for('auth.auth') }}">Войти</a>
-      {% endif %}
-    </nav>
-  </header>
-
-  <!-- Хлебные крошки -->
-  {% block breadcrumbs %}{% endblock %}
-
-  <!-- Основной контент -->
-  {% block content %}{% endblock %}
-
-  <!-- Футер -->
-  {% block footer %}
-  <footer style="text-align:center; padding:2rem; color:#64748b; font-size:0.9rem; margin-top:3rem; border-top:1px solid #e2e8f0;">
-    <p>© 2026 MyShop. Все права защищены.</p>
-    <div style="display:flex; justify-content:center; gap:1.5rem; margin-top:0.5rem;">
-      <a href="#" style="color:#64748b; text-decoration:none;">Политика конфиденциальности</a>
-      <a href="#" style="color:#64748b; text-decoration:none;">Условия использования</a>
-      <a href="#" style="color:#64748b; text-decoration:none;">Помощь</a>
-    </div>
-  </footer>
-  {% endblock %}
-
   <script>
     /**
      * Показать плашку уведомления
@@ -112,12 +71,13 @@
     function showToast(message, type, duration) {
       type = type || 'info';
       duration = duration || 3000;
-
+      const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+      if(!(type in icons)) type='info'
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = 'toast toast-' + type;
 
-      const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+      
       toast.innerHTML = 
         '<span>' + (icons[type] || '') + '</span>' +
         '<span>' + message + '</span>' +
@@ -135,5 +95,57 @@
       }, duration);
     }
   </script>
+  <!-- Контейнер для плашек -->
+  <div class="toast-container" id="toast-container">
+  </div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <script>
+          showToast("{{ message|e }}", "{{ category|e }}", 4000);
+        </script>
+        {% endfor %}
+    {% endif %}
+  {% endwith %}
+  <!-- Шапка -->
+  <header>
+    <div class="logo"><a href="{{ url_for('catalogue.catalogue') }}">✨ Suba Market</a></div>
+    <nav>
+      <a href="{{ url_for('catalogue.catalogue') }}">Каталог</a>
+      <a href="{{ url_for('cart.cart') }}" class="cart-icon">
+        🛒 Корзина
+        {% if cart_count and cart_count > 0 %}
+          <span class="cart-count">{{ cart_count }}</span>
+        {% endif %}
+      </a>
+      {% if g.user %}
+        <a href="#">{{ g.user['email'] }}</a>
+        <a href="{{url_for('auth.logout')}}">Выйти</a>
+      {% else %}
+        <a href="{{ url_for('auth.auth') }}">Войти</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <!-- Хлебные крошки -->
+  {% block breadcrumbs %}{% endblock %}
+
+  <!-- Основной контент -->
+  {% block content %}{% endblock %}
+
+  <!-- Футер -->
+  {% block footer %}
+  <footer style="text-align:center; padding:2rem; color:#64748b; font-size:0.9rem; margin-top:3rem; border-top:1px solid #e2e8f0;">
+    <p>© 2026 Suba Market. Все права защищены.</p>
+    <div style="display:flex; justify-content:center; gap:1.5rem; margin-top:0.5rem;">
+      <a href="#" style="color:#64748b; text-decoration:none;">Политика конфиденциальности</a>
+      <a href="#" style="color:#64748b; text-decoration:none;">Условия использования</a>
+      <a href="#" style="color:#64748b; text-decoration:none;">Помощь</a>
+    </div>
+  </footer>
+  {% endblock %}
+
+  
+  
 </body>
 </html>

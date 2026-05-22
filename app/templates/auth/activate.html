@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение аккаунта</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .success .icon { color: #2ecc71; }
+        .error .icon { color: #e74c3c; }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .success h1 { color: #2c3e50; }
+        .error h1 { color: #c0392b; }
+
+        p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 12px 30px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="success">
+            <div class="icon">✓</div>
+            <h1>Подтверждение электронной почки</h1>
+            <a href={{confirm_url}} class="btn">Подтвердить почту</a>
+        </div>
+    </div>
+
+</body>
+</html>

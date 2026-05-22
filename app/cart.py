@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, g
 from app.db import get_db
+
+from app.auth import login_required
 
 bp = Blueprint('cart', __name__)
 
@@ -20,7 +22,25 @@ def update_count():
     except Exception as e:
         return jsonify({'status': 'error','message': str(e)})
 
+@bp.route('/delete_product', methods=['POST'])
+def delete_product():
+    data = request.get_json()
+    item_ids = data.get('item_id')
+    print(item_ids)
+    try:
+        db = get_db()
+        db.execute(
+            'DELETE FROM cart'
+            ' WHERE id=?', (int(item_ids),))
+        db.commit()
+        return jsonify({'status': 'success'})
+
+    except Exception as e:
+        return jsonify({'status': 'error','message': str(e)})
+
+
 @bp.route('/cart')
+@login_required
 def cart():
     """Страница корзины."""
     db = get_db()
@@ -28,6 +48,7 @@ def cart():
         'SELECT c.id AS item_id,c.product_id, p.title, p.price*(1-p.discount/100.0) AS price, c.quantity, p.category, p.image'
         ' FROM cart c'
         ' JOIN product p ON p.id = c.product_id'
+        ' WHERE c.user_id=?', (g.user['id'],)
     ).fetchall()
     total = sum(item['price'] * item['quantity'] for item in cart_items)
     cart_count = len(cart_items)
@@ -36,6 +57,7 @@ def cart():
 
 
 @bp.route('/checkout')
+@login_required
 def checkout():
     """Страница оформления заказа."""
     db = get_db()
@@ -43,6 +65,7 @@ def checkout():
         'SELECT p.id,p.title, c.quantity, p.price*(1-p.discount/100.0) AS subtotal'
         ' FROM cart c'
         ' JOIN product p ON p.id = c.product_id'
+        ' WHERE c.user_id=?', (g.user['id'],)
     ).fetchall()
     total = sum(item['subtotal'] * item['quantity'] for item in cart_summary)
     cart_count = len(cart_summary)

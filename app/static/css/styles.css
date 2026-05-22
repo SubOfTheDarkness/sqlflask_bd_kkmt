@@ -611,7 +611,10 @@ nav a:hover::after {
   .cart-table {
     font-size: 0.85rem;
   }
-  
+  .cart-table-deleted {
+    font-size: 0.85rem;
+    
+  }
   .auth-form,
   .checkout-form {
     margin: 1rem;
