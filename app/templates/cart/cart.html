@@ -144,9 +144,7 @@
     .then(function(data) {
       if (data.status === 'success') {
         const product_cell = document.getElementById('cart-row-' + itemId);
-        product_cell.style.backgroundColor = 'red';
-        const buttons = product_cell.querySelectorAll('button');
-        buttons.forEach(button => button.disabled = true);
+        product_cell.remove();
         updateGrandTotal();
       }
       if (data.status == 'error') {
@@ -168,6 +166,9 @@
     const formatted = grandTotal.toLocaleString('ru-RU') + ' ₽';
     document.getElementById('subtotal').textContent = formatted;
     document.getElementById('grand-total').textContent = formatted;
+    if (grandTotal===0){
+      history.go(0);
+    }
   }
 </script>
 {% endblock %}

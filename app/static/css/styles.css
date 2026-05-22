@@ -3,19 +3,19 @@
 
 /* ========== ПЕРЕМЕННЫЕ ========== */
 :root {
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: #eef2ff;
-  --secondary: #f59e0b;
-  --bg: #f1f5f9;
+  --primary: #f97316;
+  --primary-hover: #ea580c;
+  --primary-light: #fff7ed;
+  --secondary: #fbbf24;
+  --bg: #fff7ed;
   --card-bg: #ffffff;
-  --text: #1e293b;
-  --text-light: #64748b;
-  --border: #e2e8f0;
+  --text: #431407;
+  --text-light: #9a3412;
+  --border: #fed7aa;
   --radius: 12px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+  --shadow-sm: 0 1px 2px rgba(249,115,22,0.05);
+  --shadow: 0 4px 6px -1px rgba(249,115,22,0.1), 0 2px 4px -2px rgba(249,115,22,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(249,115,22,0.1), 0 4px 6px -4px rgba(249,115,22,0.1);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -120,7 +120,7 @@ nav a:hover::after {
 
 /* ========== HERO-СЕКЦИЯ ========== */
 .hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
   color: white;
   padding: 4rem 2rem;
   border-radius: var(--radius);
@@ -611,10 +611,7 @@ nav a:hover::after {
   .cart-table {
     font-size: 0.85rem;
   }
-  .cart-table-deleted {
-    font-size: 0.85rem;
-    
-  }
+  
   .auth-form,
   .checkout-form {
     margin: 1rem;

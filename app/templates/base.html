@@ -41,7 +41,7 @@
       background: #ef4444;
     }
     .toast-info {
-      background: #6366f1;
+      background: #f97316;
     }
     .toast-close {
       margin-left: auto;
@@ -124,6 +124,7 @@
       {% else %}
         <a href="{{ url_for('auth.auth') }}">Войти</a>
       {% endif %}
+      <a href="{{ url_for('admin.admin') }}" style="background:#f97316; color:white; padding:0.5rem 1rem; border-radius:100px;">👑 Админ</a>
     </nav>
   </header>
 

@@ -4,11 +4,16 @@
 
 {% block extra_head %}
 <style>
+  .admin-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
   .admin-sidebar {
-    width: 250px;
     background: var(--card-bg);
     border-radius: var(--radius);
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: var(--shadow);
     height: fit-content;
     position: sticky;
@@ -16,89 +21,350 @@
   }
   .admin-sidebar a {
     display: block;
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 1rem;
     margin-bottom: 0.25rem;
     text-decoration: none;
     color: var(--text);
     border-radius: var(--radius);
-    transition: var(--transition);
     font-weight: 500;
+    cursor: pointer;
   }
   .admin-sidebar a:hover,
   .admin-sidebar a.active {
     background: var(--primary-light);
     color: var(--primary);
   }
+  
+  /* Единый стиль для всех полей */
+  .admin-input,
+  .admin-table input,
+  .admin-table select,
+  details input,
+  details textarea,
+  details select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition);
+    background: #fafafa;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .admin-input:focus,
+  .admin-table input:focus,
+  .admin-table select:focus,
+  details input:focus,
+  details textarea:focus,
+  details select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    background: white;
+  }
+  details textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+  
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+  }
+  .admin-table th {
+    background: var(--primary-light);
+    padding: 0.75rem;
+    text-align: left;
+    font-size: 0.85rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .admin-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    vertical-align: middle;
+  }
+  .admin-table tr:hover td {
+    background: #fff7ed;
+  }
+  
+  .btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.25rem;
+  }
+  
+  details {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+  }
+  details summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 1rem;
+  }
+  
+  .form-row {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .form-row-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .preview-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .preview-img-sm {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  @media (max-width: 768px) {
+    .admin-layout {
+      grid-template-columns: 1fr;
+    }
+    .admin-sidebar {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .admin-sidebar a {
+      margin-bottom: 0;
+    }
+    .form-row-2 {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<main class="container" style="display:grid; grid-template-columns:250px 1fr; gap:2rem; margin-top:2rem;">
-  <aside class="admin-sidebar">
-    <h3 style="margin-bottom:1rem;">⚙️ Управление</h3>
-    <a href="#" class="active">📊 Дашборд</a>
-    <a href="#">📦 Товары</a>
-    <a href="#">📋 Категории</a>
-    <a href="#">🛒 Заказы</a>
-    <a href="#">👥 Пользователи</a>
-    <a href="#">📈 Статистика</a>
-  </aside>
-
-  <section>
-    <h1 style="margin-bottom:1.5rem;">📊 Дашборд</h1>
+<main class="container">
+  <div class="admin-layout">
     
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1rem; margin-bottom:2rem;">
-      <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-        <span style="color:var(--text-light); font-size:0.9rem;">Заказов сегодня</span>
-        <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">24</div>
-      </div>
-      <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-        <span style="color:var(--text-light); font-size:0.9rem;">Выручка</span>
-        <div style="font-size:2rem; font-weight:700; margin-top:0.5rem; color:#22c55e;">87 490 ₽</div>
-      </div>
-      <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-        <span style="color:var(--text-light); font-size:0.9rem;">Товаров</span>
-        <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">156</div>
-      </div>
-      <div style="background:var(--card-bg); padding:1.25rem; border-radius:var(--radius); box-shadow:var(--shadow-sm);">
-        <span style="color:var(--text-light); font-size:0.9rem;">Пользователей</span>
-        <div style="font-size:2rem; font-weight:700; margin-top:0.5rem;">1 234</div>
-      </div>
-    </div>
+    <aside class="admin-sidebar">
+      <h3 style="margin-bottom:1rem;">⚙️ Админ</h3>
+      <a class="active" onclick="showTab('products')">📦 Товары</a>
+      <a onclick="showTab('users')">👥 Пользователи</a>
+      <a onclick="showTab('carts')">🛒 Корзины</a>
+    </aside>
 
-    <div style="background:var(--card-bg); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm);">
-      <h3 style="margin-bottom:1rem;">🕐 Последние заказы</h3>
-      <table style="width:100%; border-collapse:collapse;">
-        <thead>
-          <tr style="border-bottom:2px solid var(--border); color:var(--text-light);">
-            <th style="padding:0.75rem; text-align:left;">№</th>
-            <th style="padding:0.75rem; text-align:left;">Клиент</th>
-            <th style="padding:0.75rem; text-align:left;">Сумма</th>
-            <th style="padding:0.75rem; text-align:left;">Статус</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.75rem;">#1024</td>
-            <td style="padding:0.75rem;">Анна Петрова</td>
-            <td style="padding:0.75rem;">4 998 ₽</td>
-            <td style="padding:0.75rem;"><span style="background:#fef3c7; color:#92400e; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">В обработке</span></td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.75rem;">#1023</td>
-            <td style="padding:0.75rem;">Иван Смирнов</td>
-            <td style="padding:0.75rem;">1 200 ₽</td>
-            <td style="padding:0.75rem;"><span style="background:#d1fae5; color:#065f46; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">Доставлен</span></td>
-          </tr>
-          <tr>
-            <td style="padding:0.75rem;">#1022</td>
-            <td style="padding:0.75rem;">Мария Козлова</td>
-            <td style="padding:0.75rem;">7 097 ₽</td>
-            <td style="padding:0.75rem;"><span style="background:#ede9fe; color:#5b21b6; padding:0.3rem 0.6rem; border-radius:100px; font-size:0.85rem;">В пути</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+    <section>
+      
+      <!-- ===== ТОВАРЫ ===== -->
+      <div id="tab-products">
+        <h2 style="margin-bottom:1rem;">📦 Товары</h2>
+
+        <details>
+          <summary>+ Добавить товар</summary>
+          <form method="POST" action="{{ url_for('admin.add_product') }}" class="form-row" style="margin-top:1rem;">
+            <input class="admin-input" name="title" placeholder="Название" required>
+            <textarea class="admin-input" name="description" placeholder="Описание" rows="2"></textarea>
+            <div class="form-row form-row-2">
+              <input class="admin-input" name="price" type="number" placeholder="Цена" required>
+              <input class="admin-input" name="discount" type="number" placeholder="Скидка %" value="0">
+            </div>
+            <input class="admin-input" name="category" placeholder="Категория" required>
+            
+            <div style="display:flex; gap:0.75rem; align-items:start;">
+              <div style="flex:1;">
+                <select class="admin-input" name="image" id="image-select" onchange="previewImage(this)" style="margin-bottom:0.5rem;">
+                  <option value="">Без картинки</option>
+                  {% for img in images %}
+                  <option value="/static/images/{{ img }}">{{ img }}</option>
+                  {% endfor %}
+                </select>
+                <input class="admin-input" name="image_url" id="image-url" placeholder="Или вставьте URL" oninput="previewURL(this)">
+              </div>
+              <img id="image-preview" class="preview-img" src="" alt="Превью" style="display:none;">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Добавить товар</button>
+          </form>
+        </details>
+
+        <table class="admin-table">
+          <thead>
+            <tr><th>ID</th><th>Название</th><th>Цена</th><th>%</th><th>Категория</th><th>Картинка</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for p in products %}
+            <tr>
+              <td>{{ p.id }}</td>
+              <form method="POST" action="{{ url_for('admin.edit_product', product_id=p.id) }}" style="display:contents;">
+                <td><input class="admin-input" name="title" value="{{ p.title }}"></td>
+                <td><input class="admin-input" name="price" type="number" value="{{ p.price }}" style="width:80px;"></td>
+                <td><input class="admin-input" name="discount" type="number" value="{{ p.discount or 0 }}" style="width:60px;"></td>
+                <td><input class="admin-input" name="category" value="{{ p.category }}" style="width:100px;"></td>
+                <td style="display:flex; gap:0.5rem; align-items:center;">
+                  <input type="hidden" name="description" value="{{ p.description or '' }}">
+                  <select class="admin-input" name="image" onchange="previewEdit(this, {{ p.id }})" style="width:120px; font-size:0.8rem;">
+                    <option value="">—</option>
+                    {% for img in images %}
+                    <option value="/static/images/{{ img }}" {% if p.image == '/static/images/' + img %}selected{% endif %}>{{ img }}</option>
+                    {% endfor %}
+                  </select>
+                  <img id="preview-{{ p.id }}" class="preview-img-sm" src="{{ p.image or '' }}" style="{% if not p.image %}display:none;{% endif %}">
+                  <button type="submit" class="btn btn-primary btn-sm">💾</button>
+              </form>
+                  <form method="POST" action="{{ url_for('admin.delete_product', product_id=p.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить «{{ p.title }}»?')">🗑</button>
+                  </form>
+                </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== ПОЛЬЗОВАТЕЛИ ===== -->
+      <div id="tab-users" style="display:none;">
+        <h2 style="margin-bottom:1rem;">👥 Пользователи</h2>
+
+        <details>
+          <summary>+ Добавить пользователя</summary>
+          <form method="POST" action="{{ url_for('admin.add_user') }}" class="form-row" style="margin-top:1rem;">
+            <input class="admin-input" name="email" type="email" placeholder="Email" required>
+            <input class="admin-input" name="password" type="password" placeholder="Пароль" required>
+            <button type="submit" class="btn btn-primary">Добавить пользователя</button>
+          </form>
+        </details>
+
+        <table class="admin-table">
+          <thead>
+            <tr><th>ID</th><th>Email</th><th>Админ</th><th>Подтв.</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td>{{ u.id }}</td>
+              <td>{{ u.email }}</td>
+              <td>
+                <button type="submit" disabled class="btn-icon">
+                  {% if u.flag_admin %}✅{% else %}⬜{% endif %}
+                </button>
+              </td>
+              <td>
+                <form method="POST" action="{{ url_for('admin.toggle_confirmation', user_id=u.id) }}" style="display:inline;">
+                  <button type="submit" class="btn-icon">
+                    {% if u.flag_confirmed %}✅{% else %}❌{% endif %}
+                  </button>
+                </form>
+              </td>
+              <td>
+                <form method="POST" action="{{ url_for('admin.delete_user', user_id=u.id) }}" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить {{ u.email }}?')">🗑</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== КОРЗИНЫ ===== -->
+      <div id="tab-carts" style="display:none;">
+        <h2 style="margin-bottom:1rem;">🛒 Корзины</h2>
+
+        <table class="admin-table">
+          <thead>
+            <tr><th>ID</th><th>Пользователь</th><th>Товар</th><th>Кол-во</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for c in carts %}
+            <tr>
+              <td>{{ c.id }}</td>
+              <td>{{ c.email or 'Гость (0)' }}</td>
+              <td>{{ c.title or '❌ Удалён' }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('admin.update_cart_item', cart_id=c.id) }}" style="display:flex; gap:0.5rem; align-items:center;">
+                  <input class="admin-input" name="quantity" type="number" value="{{ c.quantity }}" style="width:60px;" min="1">
+                  <button type="submit" class="btn btn-primary btn-sm">💾</button>
+                </form>
+              </td>
+              <td>
+                <form method="POST" action="{{ url_for('admin.delete_cart_item', cart_id=c.id) }}" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить запись?')">🗑</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+  </div>
 </main>
+
+<script>
+  function showTab(tab) {
+    document.querySelectorAll('[id^="tab-"]').forEach(function(el) { el.style.display = 'none'; });
+    document.getElementById('tab-' + tab).style.display = 'block';
+    document.querySelectorAll('.admin-sidebar a').forEach(function(a) { a.classList.remove('active'); });
+    event.target.classList.add('active');
+  }
+
+  function previewImage(select) {
+    const preview = document.getElementById('image-preview');
+    const urlInput = document.getElementById('image-url');
+    if (select.value) {
+      preview.src = select.value;
+      preview.style.display = 'block';
+      urlInput.value = '';
+    } else {
+      preview.style.display = 'none';
+    }
+  }
+
+  function previewURL(input) {
+    const preview = document.getElementById('image-preview');
+    const select = document.getElementById('image-select');
+    if (input.value) {
+      preview.src = input.value;
+      preview.style.display = 'block';
+      select.value = '';
+    } else if (!select.value) {
+      preview.style.display = 'none';
+    }
+  }
+
+  function previewEdit(select, id) {
+    const preview = document.getElementById('preview-' + id);
+    if (select.value) {
+      preview.src = select.value;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
+  }
+</script>
 {% endblock %}

@@ -23,7 +23,8 @@ def create_app(test_config=None):
     db.init_app(app)
     from . import cart
     app.register_blueprint(cart.bp)
-
+    from . import admin
+    app.register_blueprint(admin.bp)
     from . import auth
     with app.app_context():
         auth.init_mails()
