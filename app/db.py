@@ -22,6 +22,12 @@ def init_db():
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
+    from werkzeug.security import generate_password_hash
+    db.execute(
+        'INSERT INTO user(email, password, flag_confirmed, flag_admin)'
+        ' VALUES("admin",?,1,1)',(generate_password_hash('admin'),)
+    )
+    db.commit()
 
 
 @click.command('init-db')
