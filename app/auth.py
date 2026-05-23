@@ -5,7 +5,7 @@ from flask import (
     Blueprint, current_app, flash, g, redirect, render_template, request, session, url_for
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-
+from threading import Thread
 from app.db import get_db
 
 bp = Blueprint('auth', __name__)
@@ -24,6 +24,13 @@ def confirm_token(token, expiration=3600):
     except:
         return False
     return email
+
+def send_async_email(msg):
+    try:
+        mail.send(msg)
+    except Exception as e:
+        flash(e,'error')
+        return redirect('auth.auth')
 
 @bp.route('/confirm/<token>')
 def confirm_email(token):
@@ -87,7 +94,8 @@ def auth():
                     confirm_url = url_for('auth.confirm_email', token=token, _external=True)
                     html = render_template('auth/activate.html', confirm_url=confirm_url)
                     msg = Message('Подтверждение аккаунт', recipients=[email], html=html)
-                    mail.send(msg)
+                    Thread(target=send_async_email, args=(current_app, msg)).start()
+                    
                 except db.IntegrityError:
                     error = f"User with e-mail {email} is already registered."
                 except Exception as e:
