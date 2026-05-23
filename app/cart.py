@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, request, jsonify, g, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, g, redirect, url_for,flash
 from app.db import get_db
 from app.auth import login_required
 
 bp = Blueprint('cart', __name__)
 
-@bp.route('/update_count', methods=['POST'])
+@bp.route('/cart/update_count', methods=['POST'])
 def update_count():
     data = request.get_json()
     val = data.get('value')
@@ -20,7 +20,7 @@ def update_count():
     except Exception as e:
         return jsonify({'status': 'error','message': str(e)})
 
-@bp.route('/delete_product', methods=['POST'])
+@bp.route('/cart/delete_product', methods=['POST'])
 def delete_product():
     data = request.get_json()
     item_ids = data.get('item_id')
@@ -34,6 +34,19 @@ def delete_product():
     except Exception as e:
         return jsonify({'status': 'error','message': str(e)})
 
+@bp.route('/cart/clear', methods=['POST'])
+def clear():
+    error=None
+    try:
+        db = get_db()
+        db.execute(
+            'DELETE FROM cart'
+            ' WHERE user_id=?', (g.user['id'],))
+        db.commit()
+    except Exception as e:
+        error=e
+    flash(error, 'error')
+    return redirect(url_for('cart.cart'))
 
 @bp.route('/cart')
 @login_required
@@ -73,7 +86,7 @@ def create_order():
     name = request.form['name']
     phone = request.form.get('phone', '')
     email = request.form.get('email', '')
-    address = request.form.get('address', '')
+    address = request.form.get('city', '') + ', ' + request.form.get('address', '') 
     pay_method = 1 if request.form.get('payment') == 'card' else 0
     comment = request.form.get('comment', '')
 

@@ -42,6 +42,7 @@ def admin():
 # ========== ТОВАРЫ ==========
 
 @bp.route('/admin/product/add', methods=['POST'])
+@admin_required
 def add_product():
     title = request.form['title']
     description = request.form['description']
@@ -65,6 +66,7 @@ def add_product():
 
 
 @bp.route('/admin/product/edit/<int:product_id>', methods=['POST'])
+@admin_required
 def edit_product(product_id):
     title = request.form['title']
     description = request.form['description']
@@ -83,6 +85,7 @@ def edit_product(product_id):
 
 
 @bp.route('/admin/product/delete/<int:product_id>', methods=['POST'])
+@admin_required
 def delete_product(product_id):
     db = get_db()
     db.execute('DELETE FROM cart WHERE product_id = ?', (product_id,))
@@ -95,6 +98,7 @@ def delete_product(product_id):
 # ========== ПОЛЬЗОВАТЕЛИ ==========
 
 @bp.route('/admin/user/add', methods=['POST'])
+@admin_required
 def add_user():
     from werkzeug.security import generate_password_hash
     email = request.form['email']
@@ -113,6 +117,7 @@ def add_user():
 
 
 @bp.route('/admin/user/delete/<int:user_id>', methods=['POST'])
+@admin_required
 def delete_user(user_id):
     error = None
     if user_id != g.user['id']:
@@ -131,6 +136,7 @@ def delete_user(user_id):
 
 
 @bp.route('/admin/user/toggle_confirmation/<int:user_id>', methods=['POST'])
+@admin_required
 def toggle_confirmation(user_id):
     error = None
     if user_id != g.user['id']:
@@ -152,6 +158,7 @@ def toggle_confirmation(user_id):
 # ========== КОРЗИНЫ ==========
 
 @bp.route('/admin/cart/delete/<int:cart_id>', methods=['POST'])
+@admin_required
 def delete_cart_item(cart_id):
     db = get_db()
     db.execute('DELETE FROM cart WHERE id = ?', (cart_id,))
@@ -161,6 +168,7 @@ def delete_cart_item(cart_id):
 
 
 @bp.route('/admin/cart/update/<int:cart_id>', methods=['POST'])
+@admin_required
 def update_cart_item(cart_id):
     quantity = request.form.get('quantity', 1)
     db = get_db()
@@ -170,6 +178,7 @@ def update_cart_item(cart_id):
     return redirect(url_for('admin.admin', tab='carts'))
 
 @bp.route('/admin/order/delete/<int:order_id>', methods=['POST'])
+@admin_required
 def delete_order(order_id):
     db = get_db()
     db.execute('DELETE FROM order_products WHERE order_id = ?', (order_id,))
