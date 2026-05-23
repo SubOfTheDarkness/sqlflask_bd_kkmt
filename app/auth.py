@@ -2,10 +2,9 @@ import functools
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 from flask import (
-    Blueprint, current_app, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, current_app, flash, g, redirect, render_template, request, session, url_for, jsonify
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-from threading import Thread
 from app.db import get_db
 
 bp = Blueprint('auth', __name__)
@@ -24,13 +23,37 @@ def confirm_token(token, expiration=3600):
     except:
         return False
     return email
-
-def send_async_email(msg):
+@bp.route('/sending_a_mail',methods=['POST'])
+def send_email():
+    data = request.get_json()
+    msg = data.get('msg')
+    
+    user_email = data.get('user_email')
+    print(user_email)
+    error=None
     try:
         mail.send(msg)
     except Exception as e:
-        flash(e,'error')
-        return redirect('auth.auth')
+        error = e
+    else:
+        if error is None:
+            error = None
+            return jsonify({'status': 'success'})
+    db=get_db()
+    db.execute('DELETE FROM user WHERE email=?',(user_email,))
+    db.commit()
+    flash(error,'error')
+    return jsonify({'status': 'error','message': str(error)})
+
+@bp.route('/sent_email')
+def sent_email():
+    return render_template('auth/sent_email.html')
+
+@bp.route('/sending')
+def sending():
+    msg = request.args.get("msg", "Flask")
+    user_email = request.args.get("user_email", "Flask")
+    return render_template('auth/sending.html', user_email=user_email, msg=msg)
 
 @bp.route('/confirm/<token>')
 def confirm_email(token):
@@ -94,8 +117,6 @@ def auth():
                     confirm_url = url_for('auth.confirm_email', token=token, _external=True)
                     html = render_template('auth/activate.html', confirm_url=confirm_url)
                     msg = Message('Подтверждение аккаунт', recipients=[email], html=html)
-                    Thread(target=send_async_email, args=(current_app, msg)).start()
-                    
                 except db.IntegrityError:
                     error = f"User with e-mail {email} is already registered."
                 except Exception as e:
@@ -105,7 +126,7 @@ def auth():
                     if error is None:
                         db.commit()
                         error = None
-                        return render_template('auth/sent_email.html')
+                        return redirect(url_for('auth.sending',msg=msg,user_email=email))
             input_data = request.form.to_dict()
             flash(error,'error')
 

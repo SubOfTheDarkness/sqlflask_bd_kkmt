@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Письмо отправляется — Suba Market{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="auth-form" style="text-align:center;">
+  <div style="font-size:4rem; margin-bottom:1rem;">📧</div>
+  <h2 style="margin-bottom:1rem;">Письмо отправляется</h2>
+  <p style="color:#64748b; margin-bottom:1.5rem; line-height:1.6;">
+    После отправки письма вам будет выдано сообщение об этом
+  </p>
+  <script>
+  fetch('{{ url_for("auth.send_email") }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_email: {{user_email}}, msg:{{msg}} })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.status === 'success') {
+        window.location.replace("{{url_for('auth.sent_email')}}");
+      }
+      if (data.status == 'error') {
+        console.warn('Ошибка:', data.message);
+        window.location.replace("{{url_for('auth.sent_email')}}");
+      }
+    })
+    .catch(function(err) {
+      console.error('Ошибка:', err);
+      showToast(err,'error');
+    });
+  </script>
+</div>
+{% endblock %}
