@@ -24,6 +24,24 @@ def confirm_token(token, expiration=3600):
         return False
     return email
 
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for('auth.auth'))
+
+        return view(**kwargs)
+
+    return wrapped_view
+
+def admin_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if not g.user or g.user['flag_admin']==0:
+            return redirect(url_for('auth.need_admin'))
+        return view(**kwargs)
+    return wrapped_view
+
 @bp.route('/sending_a_mail', methods=['POST'])
 def send_email():
     data = request.get_json()
@@ -162,6 +180,66 @@ def auth():
             flash(error,'error')
     return render_template('auth/auth.html', input_data=input_data)
 
+@bp.route('/profile')
+@login_required
+def profile():
+    db = get_db()
+    user_orders = db.execute(
+        'SELECT o.id, o.name, o.phone_number, o.email, o.address_delivery,'
+        ' o.pay_method, o.comment'
+        ' FROM orders o'
+        ' WHERE o.user_id = ?'
+        ' ORDER BY o.id DESC',
+        (g.user['id'],)
+    ).fetchall()
+
+    orders_with_items = []
+    total_spent = 0
+    for order in user_orders:
+        items = db.execute(
+            'SELECT product, quantity, price FROM order_products WHERE order_id=?',
+            (order['id'],)
+        ).fetchall()
+        total = sum(item['price'] * item['quantity'] for item in items)
+        total_spent += total
+        orders_with_items.append({
+            'order': order,
+            'products': items,
+            'total': total
+        })
+
+    last_order = orders_with_items[0] if orders_with_items else None
+
+    return render_template('auth/profile.html',
+                         orders=orders_with_items,
+                         last_order=last_order,
+                         total_spent=total_spent)
+
+
+@bp.route('/change_password', methods=['POST'])
+@login_required
+def change_password():
+    old_password = request.form['old_password']
+    new_password = request.form['new_password']
+    confirm_password = request.form['confirm_password']
+    
+    if not check_password_hash(g.user['password'], old_password):
+        flash('Неверный текущий пароль', 'error')
+    elif new_password != confirm_password:
+        flash('Новые пароли не совпадают', 'error')
+    elif len(new_password) < 6:
+        flash('Пароль должен быть не менее 6 символов', 'error')
+    else:
+        db = get_db()
+        db.execute(
+            'UPDATE user SET password=? WHERE id=?',
+            (generate_password_hash(new_password), g.user['id'])
+        )
+        db.commit()
+        flash('Пароль успешно изменён', 'success')
+    
+    return redirect(url_for('auth.profile'))
+
 @bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
@@ -178,20 +256,3 @@ def logout():
     session.clear()
     return redirect(url_for('catalogue.catalogue'))
 
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for('auth.auth'))
-
-        return view(**kwargs)
-
-    return wrapped_view
-
-def admin_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if not g.user or g.user['flag_admin']==0:
-            return redirect(url_for('auth.need_admin'))
-        return view(**kwargs)
-    return wrapped_view

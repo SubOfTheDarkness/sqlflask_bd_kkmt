@@ -131,7 +131,7 @@
         {% endif %}
       </a>
       {% if g.user %}
-        <a href="#">{{ g.user['email'] }}</a>
+        <a href="{{ url_for('auth.profile') }}">{{ g.user['email'] }}</a>
         <a href="{{url_for('auth.logout')}}">Выйти</a>
       {% else %}
         <a href="{{ url_for('auth.auth') }}">Войти</a>
