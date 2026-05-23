@@ -116,9 +116,10 @@ def auth():
             if error is None:
                 try:
                     db.execute("BEGIN")
+                    from time import time
                     db.execute(
-                        "INSERT INTO user (email, password) VALUES (?, ?)",
-                        (email, generate_password_hash(password),),
+                        "INSERT INTO user (email, password, created_at) VALUES (?, ?, ?)",
+                        (email, generate_password_hash(password), time()),
                     )
                     token = generate_confirmation_token(email)
                     confirm_url = url_for('auth.confirm_email', token=token, _external=True)

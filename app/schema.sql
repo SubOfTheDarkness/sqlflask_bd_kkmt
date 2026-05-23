@@ -8,7 +8,8 @@ CREATE TABLE user (
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     flag_admin INTEGER(1) NOT NULL DEFAULT(0),
-    flag_confirmed INTEGER(1) NOT NULL DEFAULT(0)
+    flag_confirmed INTEGER(1) NOT NULL DEFAULT(0),
+    created_at REAL NOT NULL DEFAULT 0
 );
 
 CREATE TABLE cart (
