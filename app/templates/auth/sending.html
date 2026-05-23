@@ -1,36 +1,54 @@
 {% extends "base.html" %}
 
-{% block title %}Письмо отправляется — Suba Market{% endblock %}
+{% block title %}Отправка письма — Suba Market{% endblock %}
 
 {% block footer %}{% endblock %}
 
+{% block extra_head %}
+<style>
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #fed7aa;
+    border-top: 4px solid #f97316;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1.5rem;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="auth-form" style="text-align:center;">
-  <div style="font-size:4rem; margin-bottom:1rem;">📧</div>
-  <h2 style="margin-bottom:1rem;">Письмо отправляется</h2>
-  <p style="color:#64748b; margin-bottom:1.5rem; line-height:1.6;">
-    После отправки письма вам будет выдано сообщение об этом
+  <div style="font-size:4rem; margin-bottom:0.5rem;">📧</div>
+  <div class="spinner"></div>
+  <h2 style="margin-bottom:0.5rem;">Отправляем письмо</h2>
+  <p style="color:#64748b; line-height:1.6;">
+    Пожалуйста, подождите...
   </p>
-  <script>
-  fetch('{{ url_for("auth.send_email") }}', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_email: {{user_email}}, msg:{{msg}} })
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      if (data.status === 'success') {
-        window.location.replace("{{url_for('auth.sent_email')}}");
-      }
-      if (data.status == 'error') {
-        console.warn('Ошибка:', data.message);
-        window.location.replace("{{url_for('auth.sent_email')}}");
-      }
-    })
-    .catch(function(err) {
-      console.error('Ошибка:', err);
-      showToast(err,'error');
-    });
-  </script>
 </div>
+
+<script>
+  fetch('{{ url_for("auth.send_email") }}', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      user_email: "{{ user_email|e }}"
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.status === 'success') {
+      window.location.href = "{{ url_for('auth.sent_email') }}";
+    } else {
+      window.location.href = "{{ url_for('auth.email_error') }}?error=" + encodeURIComponent(data.message);
+    }
+  })
+  .catch(function(err) {
+    window.location.href = "{{ url_for('auth.sent_email') }}";
+  });
+</script>
 {% endblock %}

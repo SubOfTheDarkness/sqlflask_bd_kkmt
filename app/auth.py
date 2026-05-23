@@ -23,27 +23,30 @@ def confirm_token(token, expiration=3600):
     except:
         return False
     return email
-@bp.route('/sending_a_mail',methods=['POST'])
+
+@bp.route('/sending_a_mail', methods=['POST'])
 def send_email():
     data = request.get_json()
-    msg = data.get('msg')
-    
     user_email = data.get('user_email')
-    print(user_email)
-    error=None
+    error = None
+    
+    token = generate_confirmation_token(user_email)
+    confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+    html = render_template('auth/activate.html', confirm_url=confirm_url)
+    msg = Message('Подтверждение аккаунта Suba Market', recipients=[user_email], html=html)
+    
     try:
         mail.send(msg)
     except Exception as e:
-        error = e
-    else:
-        if error is None:
-            error = None
-            return jsonify({'status': 'success'})
-    db=get_db()
-    db.execute('DELETE FROM user WHERE email=?',(user_email,))
-    db.commit()
-    flash(error,'error')
-    return jsonify({'status': 'error','message': str(error)})
+        error = str(e)
+    
+    if error:
+        db = get_db()
+        db.execute('DELETE FROM user WHERE email=?', (user_email,))
+        db.commit()
+        return jsonify({'status': 'error', 'message': error})
+    
+    return jsonify({'status': 'success'})
 
 @bp.route('/sent_email')
 def sent_email():
@@ -51,9 +54,13 @@ def sent_email():
 
 @bp.route('/sending')
 def sending():
-    msg = request.args.get("msg", "Flask")
-    user_email = request.args.get("user_email", "Flask")
-    return render_template('auth/sending.html', user_email=user_email, msg=msg)
+    user_email = request.args.get("user_email", "")
+    return render_template('auth/sending.html', user_email=user_email)
+
+@bp.route('/email_error')
+def email_error():
+    error = request.args.get("error", "Неизвестная ошибка")
+    return render_template('auth/email_error.html', error=error)
 
 @bp.route('/confirm/<token>')
 def confirm_email(token):
@@ -126,7 +133,7 @@ def auth():
                     if error is None:
                         db.commit()
                         error = None
-                        return redirect(url_for('auth.sending',msg=msg,user_email=email))
+                        return redirect(url_for('auth.sending', user_email=email))
             input_data = request.form.to_dict()
             flash(error,'error')
 
