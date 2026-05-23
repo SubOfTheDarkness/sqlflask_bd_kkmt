@@ -32,17 +32,19 @@ CREATE TABLE orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     phone_number TEXT,
-    email INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    email TEXT NOT NULL,
     address_delivery TEXT,
     pay_method INTEGER(1) NOT NULL DEFAULT(0),
-    comment TEXT
+    comment TEXT,
+    FOREIGN KEY (user_id) REFERENCES user (id)
 );
 CREATE TABLE order_products(
     order_id INTEGER NOT NULL,
     product TEXT NOT NULL,
     quantity INTEGER NOT NULL,
     price INTEGER NOT NULL,
-    PRIMARY KEY(order_id,product)
+    PRIMARY KEY(order_id,product),
     FOREIGN KEY (order_id) REFERENCES orders (id)
 );
 insert into product(title, description, price, discount,category,image)

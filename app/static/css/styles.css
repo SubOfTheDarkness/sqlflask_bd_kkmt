@@ -52,11 +52,21 @@ header {
 .logo a {
   font-size: 1.5rem;
   font-weight: 700;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo a img {
+  transform: translateY(-5px);
+}
+
+.logo a span {
   background: linear-gradient(135deg, #f97316, #fbbf24);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-decoration: none;
 }
 
 nav {

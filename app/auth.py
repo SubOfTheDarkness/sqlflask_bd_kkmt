@@ -118,6 +118,7 @@ def auth():
             if error is None:
                 session.clear()
                 session['user_id'] = user['id']
+                session['email'] = user['email']
                 session['flag_admin'] = user['flag_admin']
                 return redirect(url_for('catalogue.catalogue'))
             input_data = request.form.to_dict()

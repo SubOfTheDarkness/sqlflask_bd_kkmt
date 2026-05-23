@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash, g
 from app.auth import admin_required
 from app.db import get_db
 
@@ -19,6 +19,16 @@ def admin():
         'LEFT JOIN product p ON p.id = c.product_id '
         'ORDER BY c.id DESC'
     ).fetchall()
+    orders = db.execute(
+        'SELECT o.id, o.name, o.phone_number, o.email, o.address_delivery, '
+        'o.pay_method, o.comment, '
+        "GROUP_CONCAT(op.product || ' x' || op.quantity, ', ') AS products, "
+        'SUM(op.price * op.quantity) AS total '
+        'FROM orders o '
+        'LEFT JOIN order_products op ON op.order_id = o.id '
+        'GROUP BY o.id '
+        'ORDER BY o.id DESC'
+    ).fetchall()
     images = []
     img_dir = os.path.join(current_app.root_path, 'static', 'images')
     if os.path.exists(img_dir):
@@ -26,7 +36,7 @@ def admin():
     
     tab = request.args.get('tab', 'products')
 
-    return render_template('admin/admin.html', products=products, users=users, carts=carts, images=images, active_tab=tab)
+    return render_template('admin/admin.html', products=products, users=users, carts=carts, images=images, active_tab=tab, orders=orders)
 
 
 # ========== ТОВАРЫ ==========
@@ -104,22 +114,38 @@ def add_user():
 
 @bp.route('/admin/user/delete/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
-    db = get_db()
-    db.execute('DELETE FROM cart WHERE user_id = ?', (user_id,))
-    db.execute('DELETE FROM user WHERE id = ?', (user_id,))
-    db.commit()
-    flash('Пользователь удалён', 'success')
+    error = None
+    if user_id != g.user['id']:
+        if user_id == 1:
+            error = 'Нельзя удалять Гл.Админа'
+        else:
+            db = get_db()
+            db.execute('DELETE FROM cart WHERE user_id = ?', (user_id,))
+            db.execute('DELETE FROM user WHERE id = ?', (user_id,))
+            db.commit()
+            flash('Пользователь удалён', 'success')
+    else:
+        error = 'Нельзя удалять текущего пользователя'
+    flash(error, 'error')
     return redirect(url_for('admin.admin', tab='users'))
 
 
 @bp.route('/admin/user/toggle_confirmation/<int:user_id>', methods=['POST'])
 def toggle_confirmation(user_id):
-    db = get_db()
-    user = db.execute('SELECT flag_confirmed FROM user WHERE id = ?', (user_id,)).fetchone()
-    if user:
-        new_val = 0 if user['flag_confirmed'] else 1
-        db.execute('UPDATE user SET flag_confirmed = ? WHERE id = ?', (new_val, user_id))
-        db.commit()
+    error = None
+    if user_id != g.user['id']:
+        db = get_db()
+        user = db.execute('SELECT flag_confirmed, email FROM user WHERE id = ?', (user_id,)).fetchone()
+        if user:
+            if user['email'] == 'admin':
+                error = 'Нельзя изменять статус Гл.Админа'
+            else:
+                new_val = 0 if user['flag_confirmed'] else 1
+                db.execute('UPDATE user SET flag_confirmed = ? WHERE id = ?', (new_val, user_id))
+                db.commit()
+    else:
+        error = 'Нельзя изменять статус текущего пользователя'
+    flash(error, 'error')
     return redirect(url_for('admin.admin', tab='users'))
 
 
@@ -143,3 +169,11 @@ def update_cart_item(cart_id):
     flash('Количество обновлено', 'success')
     return redirect(url_for('admin.admin', tab='carts'))
 
+@bp.route('/admin/order/delete/<int:order_id>', methods=['POST'])
+def delete_order(order_id):
+    db = get_db()
+    db.execute('DELETE FROM order_products WHERE order_id = ?', (order_id,))
+    db.execute('DELETE FROM orders WHERE id = ?', (order_id,))
+    db.commit()
+    flash('Заказ удалён', 'success')
+    return redirect(url_for('admin.admin', tab='orders'))

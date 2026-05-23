@@ -69,31 +69,34 @@
      * @param {string} type - Тип: 'success', 'error', 'info'
      * @param {number} duration - Время показа в мс (по умолчанию 3000)
      */
+    
     function showToast(message, type, duration) {
-      type = type || 'info';
-      duration = duration || 3000;
-      const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-      if(!(type in icons)) type='info'
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = 'toast toast-' + type;
+      if (message != 'None'){
+        type = type || 'info';
+        duration = duration || 3000;
+        const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+        if(!(type in icons)) type='info'
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
 
-      
-      toast.innerHTML = 
-        '<span>' + (icons[type] || '') + '</span>' +
-        '<span>' + message + '</span>' +
-        '<button class="toast-close" onclick="this.parentElement.remove()">×</button>';
+        
+        toast.innerHTML = 
+          '<span>' + (icons[type] || '') + '</span>' +
+          '<span>' + message + '</span>' +
+          '<button class="toast-close" onclick="this.parentElement.remove()">×</button>';
 
-      container.appendChild(toast);
+        container.appendChild(toast);
 
-      // Анимация появления
-      setTimeout(function() { toast.classList.add('show'); }, 10);
+        // Анимация появления
+        setTimeout(function() { toast.classList.add('show'); }, 10);
 
-      // Автоудаление
-      setTimeout(function() {
-        toast.classList.remove('show');
-        setTimeout(function() { toast.remove(); }, 400);
-      }, duration);
+        // Автоудаление
+        setTimeout(function() {
+          toast.classList.remove('show');
+          setTimeout(function() { toast.remove(); }, 400);
+        }, duration);
+      }
     }
   </script>
   <!-- Контейнер для плашек -->
@@ -110,7 +113,12 @@
   {% endwith %}
   <!-- Шапка -->
   <header>
-    <div class="logo"><a href="{{ url_for('catalogue.catalogue') }}"><img src="{{url_for('static', filename='favicon.png')}}" width="32" height="32"> Suba Market</a></div>
+    <div class="logo">
+      <a href="{{ url_for('catalogue.catalogue') }}">
+        <img src="{{url_for('static', filename='favicon.png')}}" width="25.5" height="30" alt="">
+        <span>Suba Market</span>
+      </a>
+    </div>
     <nav>
       {% if g.user and g.user['flag_admin']==1%}
       <a href="{{ url_for('admin.admin') }}" style="background:#f97316; color:white; padding:0.5rem 1rem; border-radius:100px;">👑 Админ</a>
