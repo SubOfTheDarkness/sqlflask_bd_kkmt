@@ -1,0 +1,11 @@
+SECRET_KEY='cda83c0cd1a6812d07c3b32067d397bfa173d922cc9a7e198a76446a141a0edb'
+MAIL_SERVER='smtp.gmail.com' #Google
+#MAIL_SERVER='smtp.yandex.ru' #Yandex
+MAIL_PORT=587
+MAIL_USE_TLS = True
+MAIL_USERNAME = 'subamarket.noreply@gmail.com' # Google
+MAIL_PASSWORD = 'rbhaqqwbxgoloskg' #Google
+#MAIL_USERNAME = 'subamarket.noreply@yandex.ru' #Yandex
+#MAIL_PASSWORD = 'xzrpbpdttnomgnky' #Yandex
+#MAIL_DEFAULT_SENDER = 'subamarket.noreply@yandex.ru' #Yandex
+MAIL_DEFAULT_SENDER = 'subamarket.noreply@gmail.com' #Google
