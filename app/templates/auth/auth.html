@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Вход — Suba Market{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .tab-link {
+    flex: 1;
+    padding: 0.75rem;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.1rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+  .tab-link.active {
+    color: #f97316;
+    border-bottom: 3px solid #f97316;
+    font-weight: 700;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-form">
+
+  {% set active_tab = request.args.get('tab', 'login') %}
+
+  <!-- Табы -->
+  <div style="display:flex; gap:1rem; margin-bottom:2rem; border-bottom:2px solid #e2e8f0;">
+    <a href={{url_for('auth.auth',tab='login')}} class="tab-link {% if active_tab == 'login' %}active{% endif %}">
+      🔑 Вход
+    </a>
+    <a href={{url_for('auth.auth',tab='register')}} class="tab-link {% if active_tab == 'register' %}active{% endif %}">
+      ✨ Регистрация
+    </a>
+  </div>
+
+  {% if active_tab == 'register' %}
+
+  <form method="POST" action="{{ url_for('auth.auth',tab='register') }}">
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="example@mail.ru" required>
+    </div>
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" name="password" placeholder="Минимум 6 символов" required>
+    </div>
+    <button type="submit" class="btn btn-primary" style="width:100%;">
+      Зарегистрироваться
+    </button>
+  </form>
+
+  <p style="text-align:center; margin-top:1.5rem; color:#64748b;">
+    Уже есть аккаунт? <a href={{url_for('auth.auth',tab='login')}} style="color:#f97316; font-weight:600;">Войти</a>
+  </p>
+
+  {% else %}
+
+  <form id="login" method="POST" action="{{ url_for('auth.auth',tab='login') }}">
+    <div class="form-group">
+      <label>Email</label>
+      {%if input_data != None%}
+        {% set input_email = input_data.get('email', '') %}
+      {%endif%}
+      <input id="email_login" type="email" name="email" placeholder="example@mail.ru" value="{{input_email}}" required>
+    </div>
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" name="password" placeholder="••••••" required>
+    </div>
+    <button id='login_button' type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">
+      Войти
+    </button>
+  </form>
+
+  <p style="text-align:center; margin-top:1.5rem; color:#64748b;">
+    Нет аккаунта? <a href={{url_for('auth.auth',tab='register')}} style="color:#f97316; font-weight:600;">Зарегистрироваться</a>
+  </p>
+  <script>
+  document.getElementById('login_button').addEventListener('click', function(e) {
+    const email = document.getElementById('email_login');
+    const form_login = document.getElementById('login');
+    if (email.value === 'admin') {
+      form_login.submit();
+    }
+  });
+  </script>
+  {% endif %}
+</div>
+
+{% endblock %}

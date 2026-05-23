@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Suba Market{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{{url_for('static', filename='favicon.png')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <style>
+    /* Плашка уведомлений */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      min-width: 280px;
+      max-width: 400px;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .toast.show {
+      transform: translateX(0);
+    }
+    .toast-success {
+      background: #22c55e;
+    }
+    .toast-error {
+      background: #ef4444;
+    }
+    .toast-info {
+      background: #f97316;
+    }
+    .toast-close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.25rem;
+      cursor: pointer;
+      opacity: 0.8;
+      padding: 0;
+      line-height: 1;
+    }
+    .toast-close:hover {
+      opacity: 1;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <script>
+    /**
+     * Показать плашку уведомления
+     * @param {string} message - Текст сообщения
+     * @param {string} type - Тип: 'success', 'error', 'info'
+     * @param {number} duration - Время показа в мс (по умолчанию 3000)
+     */
+    
+    function showToast(message, type, duration) {
+      if (message != 'None'){
+        type = type || 'info';
+        duration = duration || 3000;
+        const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+        if(!(type in icons)) type='info'
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+
+        
+        toast.innerHTML = 
+          '<span>' + (icons[type] || '') + '</span>' +
+          '<span>' + message + '</span>' +
+          '<button class="toast-close" onclick="this.parentElement.remove()">×</button>';
+
+        container.appendChild(toast);
+
+        // Анимация появления
+        setTimeout(function() { toast.classList.add('show'); }, 10);
+
+        // Автоудаление
+        setTimeout(function() {
+          toast.classList.remove('show');
+          setTimeout(function() { toast.remove(); }, 400);
+        }, duration);
+      }
+    }
+  </script>
+  <!-- Контейнер для плашек -->
+  <div class="toast-container" id="toast-container">
+  </div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <script>
+          showToast("{{ message|e }}", "{{ category|e }}", 4000);
+        </script>
+        {% endfor %}
+    {% endif %}
+  {% endwith %}
+  <!-- Шапка -->
+  <header>
+    <div class="logo">
+      <a href="{{ url_for('catalogue.catalogue') }}">
+        <img src="{{url_for('static', filename='favicon.png')}}" width="25.5" height="30" alt="">
+        <span>Suba Market</span>
+      </a>
+    </div>
+    <nav>
+      {% if g.user and g.user['flag_admin']==1%}
+      <a href="{{ url_for('admin.admin') }}" style="background:#f97316; color:white; padding:0.5rem 1rem; border-radius:100px;">👑 Админ</a>
+      {%endif%}
+      <a href="{{ url_for('catalogue.catalogue') }}">Каталог</a>
+      <a href="{{ url_for('cart.cart') }}" class="cart-icon">
+        🛒 Корзина
+        {% if cart_count and cart_count > 0 %}
+          <span class="cart-count">{{ cart_count }}</span>
+        {% endif %}
+      </a>
+      {% if g.user %}
+        <a href="{{ url_for('auth.profile') }}">{{ g.user['email'] }}</a>
+        <a href="{{url_for('auth.logout')}}">Выйти</a>
+      {% else %}
+        <a href="{{ url_for('auth.auth') }}">Войти</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <!-- Хлебные крошки -->
+  {% block breadcrumbs %}{% endblock %}
+
+  <!-- Основной контент -->
+  {% block content %}{% endblock %}
+
+  <!-- Футер -->
+  {% block footer %}
+  <footer style="text-align:center; padding:2rem; color:#64748b; font-size:0.9rem; margin-top:3rem; border-top:1px solid #e2e8f0;">
+    <p>© 2026 Suba Market. Все права защищены.</p>
+    <div style="display:flex; justify-content:center; gap:1.5rem; margin-top:0.5rem;">
+      <a href="#" style="color:#64748b; text-decoration:none;">Политика конфиденциальности</a>
+      <a href="#" style="color:#64748b; text-decoration:none;">Условия использования</a>
+      <a href="#" style="color:#64748b; text-decoration:none;">Помощь</a>
+    </div>
+  </footer>
+  {% endblock %}
+
+  
+  
+</body>
+</html>

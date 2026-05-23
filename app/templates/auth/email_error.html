@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка отправки — Suba Market{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="auth-form" style="text-align:center;">
+  <div style="font-size:4rem; margin-bottom:1rem;">❌</div>
+  <h2 style="margin-bottom:0.5rem; color:#ef4444;">Ошибка отправки</h2>
+  <p style="color:#64748b; margin-bottom:1rem;">
+    Не удалось отправить письмо для подтверждения.
+  </p>
+  <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:1rem; margin-bottom:1.5rem; text-align:left; font-size:0.85rem; color:#991b1b; word-break:break-all;">
+    {{ error }}
+  </div>
+  <p style="color:#64748b; font-size:0.9rem; margin-bottom:1.5rem;">
+    Аккаунт не создан. Попробуйте зарегистрироваться позже или используйте другую почту.
+  </p>
+  <a href="{{ url_for('auth.auth', tab='register') }}" class="btn btn-primary" style="width:100%;">
+    Попробовать снова
+  </a>
+</div>
+{% endblock %}
