@@ -28,6 +28,12 @@
       </form>
     </div>
 
+    <form method="POST" action="{{ url_for('auth.delete_account') }}" style="margin-top:2rem; text-align:center;">
+      <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить аккаунт навсегда? Это действие необратимо.')">
+        🗑 Удалить аккаунт
+      </button>
+    </form>
+
     <!-- Статистика -->
     <div style="background:var(--card-bg); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm);">
       <h3 style="margin-bottom:1rem;">📊 Статистика</h3>

@@ -17,7 +17,9 @@ def init_mails():
 def generate_confirmation_token(email):
     return serializer.dumps(email, salt='email-confirm-salt')
 
-def confirm_token(token, expiration=3600):
+TOKEN_EXPIRATION = 600  # 10 мин
+
+def confirm_token(token, expiration=TOKEN_EXPIRATION):
     try:
         email = serializer.loads(token, salt='email-confirm-salt', max_age=expiration)
     except:
@@ -68,7 +70,8 @@ def send_email():
 
 @bp.route('/sent_email')
 def sent_email():
-    return render_template('auth/sent_email.html')
+    email = request.args.get('email', '')
+    return render_template('auth/sent_email.html', email=email)
 
 @bp.route('/sending')
 def sending():
@@ -83,24 +86,16 @@ def email_error():
 @bp.route('/confirm/<token>')
 def confirm_email(token):
     email = confirm_token(token)
-    error = None
     if not email:
-        return 'Ссылка подтверждения недействительна или истекла.', 400
-
+        return render_template('auth/confirm_error.html'), 400
+    
     db = get_db()
     try:
-        db.execute("BEGIN")
-        db.execute(
-            "UPDATE user SET flag_confirmed=1 WHERE email=?", (email,)
-        )
-    except:
-        db.rollback()
-        error = "Ошибка в БД"
-    else:
+        db.execute("UPDATE user SET flag_confirmed=1 WHERE email=?", (email,))
         db.commit()
         return render_template('auth/confirmed.html', email=email)
-    flash(error, 'error')
-    return redirect(url_for('auth.auth'))
+    except:
+        return render_template('auth/confirm_error.html'), 500
 
 @bp.route('/register')
 def register():
@@ -109,6 +104,47 @@ def register():
 @bp.route('/login')
 def login():
     return redirect(url_for('auth.auth',method='login'))
+
+@bp.route('/forgot', methods=('GET', 'POST'))
+def forgot():
+    if request.method == 'POST':
+        email = request.form['email']
+        db = get_db()
+        user = db.execute('SELECT * FROM user WHERE email = ?', (email,)).fetchone()
+        if user:
+            token = generate_confirmation_token(email)
+            reset_url = url_for('auth.reset_password', token=token, _external=True)
+            html = render_template('auth/reset_email.html', reset_url=reset_url)
+            msg = Message('Сброс пароля Suba Market', recipients=[email], html=html)
+            mail.send(msg)
+        flash('Если аккаунт существует, ссылка отправлена на почту', 'info')
+        return redirect(url_for('auth.auth'))
+    return render_template('auth/forgot.html')
+
+
+@bp.route('/reset/<token>', methods=('GET', 'POST'))
+def reset_password(token):
+    email = confirm_token(token)
+    if not email:
+        flash('Ссылка недействительна или истекла', 'error')
+        return redirect(url_for('auth.auth'))
+    
+    if request.method == 'POST':
+        password = request.form['password']
+        confirm = request.form['confirm_password']
+        if password != confirm:
+            flash('Пароли не совпадают', 'error')
+        elif len(password) < 6:
+            flash('Пароль должен быть не менее 6 символов', 'error')
+        else:
+            db = get_db()
+            db.execute('UPDATE user SET password=? WHERE email=?', 
+                      (generate_password_hash(password), email))
+            db.commit()
+            flash('Пароль успешно изменён', 'success')
+            return redirect(url_for('auth.auth'))
+    
+    return render_template('auth/reset_password.html', token=token)
 
 @bp.route('/need_admin')
 def need_admin():
@@ -129,8 +165,8 @@ def auth():
                 error = 'E-mail is required.'
             elif not password:
                 error = 'Password is required.'
-            #elif not '@' in email and not '.' in email:
-            #    error = 'This is not e-mail.'
+            elif len(password) < 6:
+                error = 'Пароль должен быть не менее 6 символов.'
             if error is None:
                 try:
                     db.execute("BEGIN")
@@ -179,6 +215,21 @@ def auth():
             input_data = request.form.to_dict()
             flash(error,'error')
     return render_template('auth/auth.html', input_data=input_data)
+
+@bp.route('/resend_confirmation', methods=['POST'])
+def resend_confirmation():
+    email = request.form['email']
+    db = get_db()
+    user = db.execute('SELECT * FROM user WHERE email=? AND flag_confirmed=0', (email,)).fetchone()
+    if user:
+        token = generate_confirmation_token(email)
+        confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+        html = render_template('auth/activate.html', confirm_url=confirm_url)
+        msg = Message('Подтверждение аккаунта Suba Market', recipients=[email], html=html)
+        mail.send(msg)
+        return redirect(url_for('auth.sending', user_email=email))
+    flash('Аккаунт не найден или уже подтверждён', 'error')
+    return redirect(url_for('auth.auth'))
 
 @bp.route('/profile')
 @login_required
@@ -239,6 +290,20 @@ def change_password():
         flash('Пароль успешно изменён', 'success')
     
     return redirect(url_for('auth.profile'))
+
+@bp.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    user_id = g.user['id']
+    db = get_db()
+    db.execute('DELETE FROM cart WHERE user_id=?', (user_id,))
+    db.execute('DELETE FROM order_products WHERE order_id IN (SELECT id FROM orders WHERE user_id=?)', (user_id,))
+    db.execute('DELETE FROM orders WHERE user_id=?', (user_id,))
+    db.execute('DELETE FROM user WHERE id=?', (user_id,))
+    db.commit()
+    session.clear()
+    flash('Аккаунт удалён', 'info')
+    return redirect(url_for('catalogue.catalogue'))
 
 @bp.before_app_request
 def load_logged_in_user():

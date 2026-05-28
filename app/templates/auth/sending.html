@@ -27,13 +27,13 @@
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.status === 'success') {
-      window.location.href = "{{ url_for('auth.sent_email') }}";
+      window.location.href = "{{ url_for('auth.sent_email', email=user_email) }}";
     } else {
       window.location.href = "{{ url_for('auth.email_error') }}?error=" + encodeURIComponent(data.message);
     }
   })
   .catch(function(err) {
-    window.location.href = "{{ url_for('auth.sent_email') }}";
+    window.location.href = "{{ url_for('auth.sent_email', email=user_email) }}";
   });
 </script>
 {% endblock %}
