@@ -4,15 +4,18 @@ import threading
 import time
 from app.db import get_db
 
+# Таймауты в секундах
+USER_EXPIRATION = 600      # 1 час для удаления неподтверждённых
+CHECK_INTERVAL = 60       # Проверка раз в 30 минут
+
 def delete_unconfirmed_users(app):
-    """Фоновый поток: удаляет неподтверждённых пользователей раз в час."""
     while True:
-        time.sleep(3600)  # Проверка раз в час
+        time.sleep(CHECK_INTERVAL)
         with app.app_context():
             db = get_db()
             db.execute(
                 "DELETE FROM user WHERE flag_confirmed = 0 AND created_at < ?",
-                (time.time() - 3600,)  # 1 часа
+                (time.time() - USER_EXPIRATION,)
             )
             db.commit()
 

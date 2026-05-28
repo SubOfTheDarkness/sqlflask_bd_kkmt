@@ -75,12 +75,7 @@
         <span style="color:#22c55e;">Бесплатно</span>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <span style="font-size:1.2rem; font-weight:600;">Итого</spandisplay.textContent = current;
-        
-        const totalCell = document.getElementById('total-' + itemId);
-        const formatted = (price * current).toLocaleString('ru-RU') + ' ₽' + ' :';
-        totalCell.innerHTML = '<strong>' + formatted + '</strong>
-        
+        <span style="font-size:1.2rem; font-weight:600;">Итого</span>
         <script>updateGrandTotal()</script>
         <span class="total" id="grand-total">{{ "{:,.0f}".format(total).replace(",", " ") }} ₽</span>
       </div>

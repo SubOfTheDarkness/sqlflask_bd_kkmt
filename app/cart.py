@@ -4,7 +4,7 @@ from app.auth import login_required
 
 bp = Blueprint('cart', __name__)
 
-@bp.route('/cart/update_count', methods=['POST'])
+@bp.route('/update_count', methods=['POST'])
 def update_count():
     data = request.get_json()
     val = data.get('value')
@@ -20,7 +20,7 @@ def update_count():
     except Exception as e:
         return jsonify({'status': 'error','message': str(e)})
 
-@bp.route('/cart/delete_product', methods=['POST'])
+@bp.route('/delete_product', methods=['POST'])
 def delete_product():
     data = request.get_json()
     item_ids = data.get('item_id')
@@ -34,7 +34,7 @@ def delete_product():
     except Exception as e:
         return jsonify({'status': 'error','message': str(e)})
 
-@bp.route('/cart/clear', methods=['POST'])
+@bp.route('/clear', methods=['POST'])
 def clear():
     error=None
     try:

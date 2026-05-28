@@ -8,15 +8,52 @@
 <div class="auth-form" style="text-align:center;">
   <div style="font-size:4rem; margin-bottom:1rem;">📧</div>
   <h2 style="margin-bottom:1rem;">Письмо отправлено</h2>
-  <p style="color:#64748b; margin-bottom:1.5rem; line-height:1.6;">
+  <p style="color:#64748b; margin-bottom:2rem; line-height:1.6;">
     Ссылка для подтверждения аккаунта отправлена на вашу почту.<br>
     Проверьте папку «Входящие» или «Спам».
   </p>
-  <p style="color:#64748b; font-size:0.9rem; margin-bottom:2rem;">
-    Не пришло письмо? Проверьте правильность адреса или повторите попытку позже.
-  </p>
+  <form id="resend-form" method="POST" action="{{ url_for('auth.resend_confirmation') }}">
+    <input type="hidden" name="email" value="{{ request.args.get('email', '') }}">
+    <button id="resend-btn" type="submit" class="resend-text" disabled>
+      Отправить повторно через 30 сек.
+    </button>
+  </form>
   <a href="{{ url_for('catalogue.catalogue') }}" class="btn btn-primary" style="width:100%;">
     Перейти в каталог
   </a>
 </div>
+
+<style>
+  .resend-text {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: default;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    font-family: inherit;
+    display: block;
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+</style>
+
+<script>
+  const resendBtn = document.getElementById('resend-btn');
+  let secondsLeft = 2;
+
+  const timer = setInterval(function() {
+    secondsLeft--;
+    if (secondsLeft <= 0) {
+      clearInterval(timer);
+      resendBtn.disabled = false;
+      resendBtn.textContent = 'Отправить повторно';
+      resendBtn.className = 'btn btn-primary';
+      resendBtn.style.width = '100%';
+      resendBtn.style.marginBottom = '0.75rem';
+    } else {
+      resendBtn.textContent = 'Отправить повторно через ' + secondsLeft + ' сек.';
+    }
+  }, 1000);
+</script>
 {% endblock %}
